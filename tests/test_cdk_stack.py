@@ -10,6 +10,9 @@ def test_sqs_queue_created():
     stack = ExecutionStack(app, "cdk")
     template = assertions.Template.from_stack(stack)
 
-    template.has_resource_properties("AWS::Lambda::Function", {
-        "FunctionName": "genesis-point",
-    })
+    template.has_resource_properties(
+        "AWS::Lambda::Function",
+        {
+            "FunctionName": "function-name",
+        },
+    )
