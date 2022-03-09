@@ -133,4 +133,6 @@ dmypy.json
 cdk.out
 
 # Planet Emu
+.data
 .temp
+sandbox.py
