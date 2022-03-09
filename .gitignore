@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# Planet Emu
+.temp
