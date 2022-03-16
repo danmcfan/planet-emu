@@ -1,6 +1,7 @@
 import ee
 import pandas as pd
 import datetime as dt
+from pprint import pprint
 
 ee.Initialize()
 
@@ -71,40 +72,19 @@ def get_crop_df(x: float, y: float) -> pd.DataFrame:
     return df
 
 
-def get_sentinel_df(x: float, y: float) -> pd.DataFrame:
-    img = ee.ImageCollection("COPERNICUS/S2")
-    point = ee.Geometry.Point([x, y])
-
-    img_filtered = img.filterBounds(point).filterDate(
-        "2021-01-01", "2022-01-01"
+def get_sentinel_fc(fc: ee.FeatureCollection, scale: int) -> pd.DataFrame:
+    img = (
+        ee.ImageCollection("USDA/NASS/CDL")
+        .sort("system:time_start", False)
+        .first()
     )
-    bands = img_filtered.toBands()
 
-    features = bands.sample(region=point, geometries=True, scale=60).getInfo()[
-        "features"
-    ]
+    fc = img.sampleRegions(
+        fc,
+        properties=[],
+        projection=ee.Projection("EPSG:4326"),
+        scale=scale,
+        geometries=True,
+    )
 
-    if len(features) != 1:
-        raise ValueError(f"Number of features is not 1: {len(features)}")
-
-    feature = features[0]
-
-    rows = list()
-
-    for k, v in feature["properties"].items():
-        start, stop, code, band = k.split("_")
-        start = dt.datetime.strptime(start, "%Y%m%dT%H%M%S")
-        stop = dt.datetime.strptime(stop, "%Y%m%dT%H%M%S")
-        rows.append(
-            dict(start=start, stop=stop, code=code, band=band, value=v)
-        )
-
-    print(feature["geometry"]["coordinates"])
-
-    df = pd.DataFrame(rows)
-
-    df = df.pivot(
-        index=["start", "stop", "code"], columns="band", values="value"
-    ).reset_index()
-
-    return df
+    return fc
