@@ -1,8 +1,6 @@
 import ee
 import eeconvert
 import geopandas as gpd
-import pandas as pd
-import datetime as dt
 import time
 
 ee.Initialize()
@@ -10,31 +8,22 @@ ee.Initialize()
 
 IMAGE_COLLECTION_NAMES = {
     "weather": "NASA/ORNL/DAYMET_V4",
-    "reflectance": "MODIS/006/MOD09Q1",
     "crop": "USDA/NASS/CDL",
+    "sentinel": "COPERNICUS/S2_SR_HARMONIZED",
 }
 
 
 def get_mean_image_sample(
     img_collection: str,
     in_gdf: gpd.GeoDataFrame,
-    scale: int,
-    month: int,
-    year: int = 2020,
-) -> pd.DataFrame:
+    scale: float,
+    year: int,
+) -> gpd.GeoDataFrame:
     in_fc = eeconvert.gdfToFc(in_gdf)
-
-    next_month = month + 1
-
-    if next_month > 12:
-        next_month = 1
-        next_year = year + 1
-    else:
-        next_year = year
 
     img = (
         ee.ImageCollection(img_collection)
-        .filterDate(f"{year}-{month}-01", f"{next_year}-{next_month}-01")
+        .filterDate(f"{year}-01-01", f"{year+1}-01-01")
         .filterBounds(in_fc)
         .mean()
     )
@@ -47,9 +36,14 @@ def get_mean_image_sample(
         geometries=True,
     )
 
-    out_gdf = eeconvert.fcToGdf(out_fc)
+    try:
+        out_gdf = eeconvert.fcToGdf(out_fc)
+    except:
+        if len(out_fc.getInfo()["features"]) == 0:
+            print("No features returned from spatial query.")
+        out_gdf = gpd.GeoDataFrame()
 
-    return out_gdf, img
+    return out_gdf
 
 
 def export_to_drive(
