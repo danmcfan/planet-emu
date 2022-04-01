@@ -1,5 +1,5 @@
-from tests.util import GDF
-from src import earth
+# from tests.util import GDF
+# from src import earth
 
 
 # def test_get_mean_image_sample():
