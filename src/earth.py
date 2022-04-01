@@ -1,7 +1,6 @@
 import ee
 import eeconvert
 import geopandas as gpd
-import time
 
 ee.Initialize()
 
@@ -16,8 +15,8 @@ IMAGE_COLLECTION_NAMES = {
 def get_mean_image_sample(
     img_collection: str,
     in_gdf: gpd.GeoDataFrame,
-    scale: float,
     year: int,
+    scale: float = 10,
 ) -> gpd.GeoDataFrame:
     in_fc = eeconvert.gdfToFc(in_gdf)
 
@@ -36,36 +35,8 @@ def get_mean_image_sample(
         geometries=True,
     )
 
-    try:
-        out_gdf = eeconvert.fcToGdf(out_fc)
-    except:
-        if len(out_fc.getInfo()["features"]) == 0:
-            print("No features returned from spatial query.")
-        out_gdf = gpd.GeoDataFrame()
+    if len(out_fc.getInfo()["features"]) == 0:
+        print("No features returned from spatial query.")
+        return gpd.GeoDataFrame()
 
-    return out_gdf
-
-
-def export_to_drive(
-    image: ee.Image,
-    file_name: str,
-    in_gdf: gpd.GeoDataFrame,
-    scale: int,
-    delay: int = 10,
-) -> None:
-
-    task = ee.batch.Export.image.toDrive(
-        image=image,
-        description=file_name,
-        folder="exports",
-        scale=scale,
-        region=eeconvert.gdfToFc(in_gdf),
-    )
-
-    task.start()
-
-    while task.active():
-        print("Task is active...")
-        time.sleep(delay)
-
-    return task
+    return eeconvert.fcToGdf(out_fc)
