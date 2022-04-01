@@ -2,8 +2,6 @@ import ee
 import eeconvert
 import geopandas as gpd
 
-ee.Initialize()
-
 
 IMAGE_COLLECTION_NAMES = {
     "weather": "NASA/ORNL/DAYMET_V4",
@@ -18,6 +16,8 @@ def get_mean_image_sample(
     year: int,
     scale: float = 10,
 ) -> gpd.GeoDataFrame:
+    ee.Initialize()
+
     in_fc = eeconvert.gdfToFc(in_gdf)
 
     img = (
