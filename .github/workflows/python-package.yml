@@ -39,8 +39,15 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Decrypt secret
+        shell: bash
+        env:
+          DECRYPT_PASSWORD: ${{ secrets.DECRYPT_PASSWORD }}
         run: |
           scripts/decrypt_secret.sh
       - name: Test with pytest
+        shell: bash
+        env:
+          GCP_SERVICE_NAME: ${{ secrets.GCP_SERVICE_NAME }}
+          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
         run: |
           pytest
