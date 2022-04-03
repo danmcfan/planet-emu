@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-from pprint import pprint
 
 from tests.util import GDF
 from src import earth
@@ -22,7 +21,7 @@ def test_get_mean_image_sample():
         scale=1000,
     )
 
-    pprint(sample_gdf.to_dict(orient="records"))
+    print(sample_gdf)
 
     assert 0 < sample_gdf.shape[0] < 10
     assert sample_gdf.shape[1] == 8
