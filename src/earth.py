@@ -1,6 +1,7 @@
 import ee
 import eeconvert
 import geopandas as gpd
+import os
 
 
 IMAGE_COLLECTION_NAMES = {
@@ -10,13 +11,23 @@ IMAGE_COLLECTION_NAMES = {
 }
 
 
+def init() -> None:
+    name = "google-earth-engine"
+    project = "buoyant-insight-324120"
+    domain = "iam.gserviceaccount.com"
+    service_account = f"{name}@{project}.{domain}"
+    credentials = ee.ServiceAccountCredentials(
+        service_account, f"{os.getenv('HOME')}/secrets/service_account.json"
+    )
+    ee.Initialize(credentials)
+
+
 def get_mean_image_sample(
     img_collection: str,
     in_gdf: gpd.GeoDataFrame,
     year: int,
     scale: float = 10,
 ) -> gpd.GeoDataFrame:
-    ee.Initialize()
 
     in_fc = eeconvert.gdfToFc(in_gdf)
 
