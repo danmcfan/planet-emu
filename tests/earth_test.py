@@ -24,5 +24,5 @@ def test_get_mean_image_sample():
 
     pprint(sample_gdf.to_dict(orient="records"))
 
-    assert sample_gdf.shape[0] in [4, 5]
+    assert 0 < sample_gdf.shape[0] < 10
     assert sample_gdf.shape[1] == 8
