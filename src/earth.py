@@ -1,6 +1,8 @@
+from typing import Optional
 import ee
 import eeconvert
 import geopandas as gpd
+import os
 
 
 IMAGE_COLLECTION_NAMES = {
@@ -10,13 +12,27 @@ IMAGE_COLLECTION_NAMES = {
 }
 
 
+def init(
+    name: str,
+    project: str,
+    secret_json: Optional[str] = None,
+) -> None:
+    if secret_json is None:
+        home = os.getenv("HOME")
+        secret_json = f"{home}/secrets/service_account.json"
+
+    domain = "iam.gserviceaccount.com"
+    service_account = f"{name}@{project}.{domain}"
+    credentials = ee.ServiceAccountCredentials(service_account, secret_json)
+    ee.Initialize(credentials)
+
+
 def get_mean_image_sample(
     img_collection: str,
     in_gdf: gpd.GeoDataFrame,
     year: int,
     scale: float = 10,
 ) -> gpd.GeoDataFrame:
-    ee.Initialize()
 
     in_fc = eeconvert.gdfToFc(in_gdf)
 
