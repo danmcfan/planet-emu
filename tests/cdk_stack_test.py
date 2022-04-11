@@ -1,7 +1,7 @@
 import aws_cdk as core
 import aws_cdk.assertions as assertions
 
-from src.cdk_stack import ExecutionStack
+from planet_emu.cdk_stack import ExecutionStack
 
 
 def test_lambda_function_created():

@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 
 from tests.util import GDF
-from src import earth
+from planet_emu.gee import gee
 
 load_dotenv()
 NAME = os.getenv("GCP_SERVICE_NAME")
@@ -10,11 +10,11 @@ PROJECT = os.getenv("GCP_PROJECT")
 
 
 def test_get_mean_image_sample():
-    earth.init(NAME, PROJECT)
+    gee.init(NAME, PROJECT)
 
-    ic_name = earth.IMAGE_COLLECTION_NAMES.get("weather")
+    ic_name = gee.IMAGE_COLLECTION_NAMES.get("weather")
 
-    sample_gdf = earth.get_mean_image_sample(
+    sample_gdf = gee.get_mean_image_sample(
         ic_name,
         GDF,
         year=2020,
