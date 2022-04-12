@@ -9,7 +9,7 @@ def to_pickle(
     temp: bool = False,
 ):
     dirname = ".temp" if temp else "data"
-    with open(f"{dirname}/{basename}.pickle", "wb") as f:
+    with open(f"{dirname}/pickle/{basename}.pickle", "wb") as f:
         pickle.dump(obj, f)
 
 
@@ -18,7 +18,7 @@ def from_pickle(
     temp: bool = False,
 ) -> Any:
     dirname = ".temp" if temp else "data"
-    with open(f"{dirname}/{basename}.pickle", "rb") as f:
+    with open(f"{dirname}/pickle/{basename}.pickle", "rb") as f:
         obj = pickle.load(f)
     return obj
 
@@ -29,7 +29,7 @@ def to_geojson(
     temp: bool = False,
 ) -> None:
     dirname = ".temp" if temp else "data"
-    gdf.to_file(f"{dirname}/{basename}.geojson", driver="GeoJSON")
+    gdf.to_file(f"{dirname}/geojson/{basename}.geojson", driver="GeoJSON")
 
 
 def from_geojson(
@@ -37,7 +37,9 @@ def from_geojson(
     temp: bool = False,
 ) -> gpd.GeoDataFrame:
     dirname = ".temp" if temp else "data"
-    return gpd.read_file(f"{dirname}/{basename}.geojson", driver="GeoJSON")
+    return gpd.read_file(
+        f"{dirname}/geojson/{basename}.geojson", driver="GeoJSON"
+    )
 
 
 def to_csv(
@@ -46,4 +48,4 @@ def to_csv(
     temp: bool = False,
 ) -> None:
     dirname = ".temp" if temp else "data"
-    gdf.to_csv(f"{dirname}/{basename}.csv", index=False)
+    gdf.to_csv(f"{dirname}/csv/{basename}.csv", index=False)
