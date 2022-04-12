@@ -1,4 +1,5 @@
-from typing import Optional
+from typing import Optional, List, Dict
+from dataclasses import dataclass
 import ee
 import eeconvert
 import geopandas as gpd
@@ -6,13 +7,6 @@ import numpy as np
 import requests
 import os
 import io
-
-
-IMAGE_COLLECTION_NAMES = {
-    "weather": "NASA/ORNL/DAYMET_V4",
-    "crop": "USDA/NASS/CDL",
-    "sentinel": "COPERNICUS/S2_SR_HARMONIZED",
-}
 
 
 def init(
@@ -28,6 +22,13 @@ def init(
     service_account = f"{name}@{project}.{domain}"
     credentials = ee.ServiceAccountCredentials(service_account, secret_json)
     ee.Initialize(credentials)
+
+
+def list_image_info(ic_name: str) -> List[Dict]:
+    ic = ee.ImageCollection(ic_name).filterDate("2020-01-01", "2021-01-01")
+    images = ic.toList(1000)
+    for image in images.getInfo():
+        print(image["id"])
 
 
 def get_mean_image_sample(
