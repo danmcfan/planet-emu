@@ -38,7 +38,7 @@ def main(x: int = 3, y: int = 2, depth: int = 0) -> None:
             (image.SWC_IMG, "swc", "Blues"),
         ]
     ):
-        if os.path.isfile(f".temp/{name}.pickle"):
+        if os.path.isfile(f"data/pickle/{name}.pickle"):
             final_gdf = util.from_pickle(name)
         else:
             final_gdf = gpd.GeoDataFrame()
@@ -71,7 +71,7 @@ def main(x: int = 3, y: int = 2, depth: int = 0) -> None:
         )
 
     print("Saving to PNG...")
-    plot_object.to_png(f"soil_properties_{depth}cm", dpi=1000)
+    plot_object.to_png(f"soil_properties_{depth}cm", dpi=300)
 
 
 if __name__ == "__main__":
