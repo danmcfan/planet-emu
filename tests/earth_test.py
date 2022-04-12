@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 
 from tests.util import GDF
-from planet_emu.gee import gee
+from planet_emu import gee
 
 load_dotenv()
 NAME = os.getenv("GCP_SERVICE_NAME")
