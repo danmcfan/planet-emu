@@ -1,5 +1,5 @@
 from tests.util import POLYGON
-from src import grid_sample as gs
+from planet_emu import grid_sample as gs
 
 SPLIT = 4
 COUNT = SPLIT**2

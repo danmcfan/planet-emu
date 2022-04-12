@@ -2,7 +2,7 @@ import os
 
 import aws_cdk as cdk
 
-from src.cdk_stack import ExecutionStack
+from planet_emu.cdk_stack import ExecutionStack
 
 
 app = cdk.App()
