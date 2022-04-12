@@ -40,17 +40,17 @@ class PlanetImageCollection:
         if start_date and end_date:
             image = self.image_collection.filterDate(start_date, end_date)
 
-        if reducer is "mean":
+        if reducer == "mean":
             image = image.mean()
-        elif reducer is "median":
+        elif reducer == "median":
             image = image.median()
-        elif reducer is "mode":
+        elif reducer == "mode":
             image = image.mode()
-        elif reducer is "min":
+        elif reducer == "min":
             image = image.min()
-        elif reducer is "max":
+        elif reducer == "max":
             image = image.max()
-        elif reducer is "std":
+        elif reducer == "std":
             image = image.reduce(ee.Reducer.stdDev())
         else:
             raise ValueError(f"Reducer '{reducer}' not recognized.")
