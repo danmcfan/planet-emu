@@ -7,9 +7,7 @@ from dotenv import load_dotenv
 import os
 import time
 
-from planet_emu import util, gee, plot
-from planet_emu.gee import image
-from planet_emu import plot
+from planet_emu import util, gee, image, plot
 
 
 def main(x: int = 3, y: int = 2, depth: int = 0) -> None:
