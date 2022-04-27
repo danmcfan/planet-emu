@@ -71,9 +71,15 @@ class PlanetImage:
     def get_image_info(self) -> Dict:
         return self.image.getInfo()
 
+    def set_ndvi(self) -> None:
+        self.image = self.image.normalizedDifference(["B8", "B4"]).rename(
+            "ndvi"
+        )
+
     def reduce_regions(
         self,
         in_gdf: gpd.GeoDataFrame,
+        tile_scale: int = 1,
         mode: bool = False,
     ) -> gpd.GeoDataFrame:
         in_fc = eeconvert.gdfToFc(in_gdf)
@@ -94,6 +100,7 @@ class PlanetImage:
             reducer=reducer,
             scale=self.scale,
             crs="EPSG:4326",
+            tileScale=tile_scale,
         )
         return eeconvert.fcToGdf(out_fc)
 
