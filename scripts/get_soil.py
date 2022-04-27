@@ -47,7 +47,9 @@ def main(x: int = 3, y: int = 2, depth: int = 0) -> None:
                 )
                 final_gdf = final_gdf.append(result_gdf, ignore_index=True)
                 print(
-                    f"({statefp}) [{name}]: {int(time.perf_counter() - t0)}s"
+                    f"STATEFP={statefp})",
+                    f"IMAGE={name}",
+                    f"TIME={int(time.perf_counter() - t0)}s",
                 )
 
             util.to_pickle(final_gdf, name)
