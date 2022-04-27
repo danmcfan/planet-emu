@@ -25,6 +25,7 @@ def main(year: int = 2020) -> None:
 
     for reducer in ["mean", "std", "min", "max"]:
         image_collection_object = image.SENTINEL_IC
+        image_collection_object.scale = 1000
         image_object = image_collection_object.get_reduced_image(
             reducer, f"{year}-01-01", f"{year+1}-01-01"
         )
