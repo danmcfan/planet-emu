@@ -1,10 +1,9 @@
+import * as React from 'react';
+import ButtonAppBar from "./ButtonAppBar"
 import './App.css';
-import Header from "./Header"
 
-function App() {
+export default function App() {
   return (
-    <Header />
+    <ButtonAppBar />
   );
 }
-
-export default App;
