@@ -2,13 +2,13 @@ import os
 
 import aws_cdk as cdk
 
-from planet_emu.cdk_stack import ExecutionStack
+from planet_emu.fast_api.stack import FastAPIStack
 
 
 app = cdk.App()
-execution_stack = ExecutionStack(
+execution_stack = FastAPIStack(
     app,
-    "execution-stack",
+    "fast-api-stack",
     env=cdk.Environment(
         account=os.getenv("CDK_DEFAULT_ACCOUNT"),
         region=os.getenv("CDK_DEFAULT_REGION"),
