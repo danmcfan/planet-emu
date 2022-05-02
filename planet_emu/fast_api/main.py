@@ -1,6 +1,7 @@
 from typing import Dict
 from mangum import Mangum
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import awswrangler as wr
 import pandas as pd
 import os
@@ -10,6 +11,19 @@ app = FastAPI(
     title="CRUD",
     description="Create Read Update Delete",
     version="0.0.1",
+)
+
+origins = [
+    "http://localhost:3000",
+    "https://danmcfan.github.io/planet-emu",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 BUCKET = os.getenv("BUCKET")
@@ -55,7 +69,7 @@ def add_item(item: str):
     df = df.append({"item": item}, ignore_index=True)
     set_json(df, "items")
     return {
-        "message": f"Added {item} to the list",
+        "message": f"Added {item}",
         "item": item,
     }
 
@@ -72,7 +86,7 @@ def get_items():
 def delete_items():
     remove_json("items")
     return {
-        "message": "Deleted all items from list",
+        "message": "Deleted all items",
     }
 
 

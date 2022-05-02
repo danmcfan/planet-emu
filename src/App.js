@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import ButtonAppBar from './ButtonAppBar';
 import LineGraph from './LineGraph';
 import Selection from './Selection';
+import Example from './Example';
 import './App.css';
 
 export default function App() {
@@ -16,6 +17,9 @@ export default function App() {
         </Box>
         <Box sx={{ m: 5, flexGrow: 2 }}>
           <Selection />
+        </Box>
+        <Box sx={{ m: 5, flexGrow: 2 }}>
+          <Example />
         </Box>
       </Box>
     </div>
