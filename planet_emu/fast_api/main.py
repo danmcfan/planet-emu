@@ -1,4 +1,3 @@
-from typing import Dict
 from mangum import Mangum
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,8 +13,8 @@ app = FastAPI(
 )
 
 origins = [
-    "http://localhost:3000",
-    "https://danmcfan.github.io/planet-emu",
+    "localhost:3000",
+    "https://danmcfan.github.io",
 ]
 
 app.add_middleware(
@@ -47,7 +46,7 @@ def remove_json(basename: str) -> None:
     wr.s3.delete_objects(path)
 
 
-def to_json(df: pd.DataFrame) -> Dict:
+def to_json(df: pd.DataFrame) -> dict:
     return json.loads(df.to_json(orient="records"))
 
 
