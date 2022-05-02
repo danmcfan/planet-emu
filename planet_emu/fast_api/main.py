@@ -15,36 +15,37 @@ app = FastAPI(
 BUCKET = os.getenv("BUCKET")
 JSON_DIR = os.getenv("JSON_DIR")
 
+
 def get_json(basename: str) -> pd.DataFrame:
     path = f"s3://{BUCKET}/{JSON_DIR}/{basename}.json"
     if not wr.s3.does_object_exist(path):
         return pd.DataFrame()
     return wr.s3.read_json(path)
 
+
 def set_json(df: pd.DataFrame, basename: str) -> None:
     path = f"s3://{BUCKET}/{JSON_DIR}/{basename}.json"
-    return wr.s3.to_json(df, path)
+    wr.s3.to_json(df, path)
+
+
+def remove_json(basename: str) -> None:
+    path = f"s3://{BUCKET}/{JSON_DIR}/{basename}.json"
+    wr.s3.delete_objects(path)
+
 
 def to_json(df: pd.DataFrame) -> Dict:
     return json.loads(df.to_json(orient="records"))
 
+
 @app.get("/")
 def index():
-    return {
-        "message": "Hello World"
-    }
+    return {"message": "index"}
+
 
 @app.get("/mirror/{item}")
 def mirror(item: str):
     return {
         "message": item,
-    }
-
-@app.get("/get/all")
-def get_all():
-    df = get_json("items")
-    return {
-        "data": to_json(df),
     }
 
 
@@ -58,13 +59,21 @@ def add_item(item: str):
         "item": item,
     }
 
-@app.get("/soil/get/{layer}/{code}")
-def get_soil(layer: str, code: int):
-    if code < 100:
-        df = pd.read_sql()
-    else:
-        data = get_soil_json(layer, code, "county")
-    return data
+
+@app.get("/get/items")
+def get_items():
+    df = get_json("items")
+    return {
+        "data": to_json(df),
+    }
+
+
+@app.get("/delete/items")
+def delete_items():
+    remove_json("items")
+    return {
+        "message": "Deleted all items from list",
+    }
 
 
 handler = Mangum(app)
