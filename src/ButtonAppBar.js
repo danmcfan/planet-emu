@@ -13,6 +13,7 @@ export default function ButtonAppBar() {
             <AppBar position="static" color="primary">
                 <Toolbar>
                     <IconButton
+                        disabled
                         size="large"
                         edge="start"
                         color="inherit"
@@ -24,7 +25,7 @@ export default function ButtonAppBar() {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Planet Emu
                     </Typography>
-                    <Button color="inherit">Danny O'Brien</Button>
+                    <Button color="inherit" href="https://www.linkedin.com/in/danny-obrien-gis/" target="_blank">Danny O'Brien</Button>
                 </Toolbar>
             </AppBar>
         </Box>
