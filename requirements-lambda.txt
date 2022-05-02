@@ -1,4 +1,0 @@
-earthengine-api==0.1.301
-eeconvert==0.1.22
-geopandas==0.10.2
-python-dotenv==0.20.0

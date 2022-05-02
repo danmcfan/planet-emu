@@ -1,14 +1,11 @@
-from typing import Optional, List, Dict
-from dataclasses import dataclass, field
+from typing import Optional
+from dataclasses import dataclass
 import ee
 import eeconvert
 import geopandas as gpd
-from dotenv import load_dotenv
 import os
 
 from planet_emu import gee
-
-load_dotenv()
 
 NAME = os.getenv("GCP_SERVICE_NAME")
 PROJECT = os.getenv("GCP_PROJECT")
@@ -24,10 +21,8 @@ class PlanetImageCollection:
     def __post_init__(self):
         self.image_collection = ee.ImageCollection(self.name)
 
-    def list_images_info(self) -> List[Dict]:
-        return self.image_collection.toList(
-            self.image_collection.size()
-        ).getInfo()
+    def list_images_info(self) -> list[dict]:
+        return self.image_collection.toList(self.image_collection.size()).getInfo()
 
     def get_reduced_image(
         self,
@@ -68,13 +63,11 @@ class PlanetImage:
         if self.image is None:
             self.image = ee.Image(self.name)
 
-    def get_image_info(self) -> Dict:
+    def get_image_info(self) -> dict:
         return self.image.getInfo()
 
     def set_ndvi(self) -> None:
-        self.image = self.image.normalizedDifference(["B8", "B4"]).rename(
-            "ndvi"
-        )
+        self.image = self.image.normalizedDifference(["B8", "B4"]).rename("ndvi")
 
     def reduce_regions(
         self,

@@ -1,5 +1,4 @@
-from typing import Optional, List, Dict
-from dataclasses import dataclass
+from typing import Optional
 import ee
 import eeconvert
 import geopandas as gpd
@@ -24,7 +23,7 @@ def init(
     ee.Initialize(credentials)
 
 
-def list_image_info(ic_name: str) -> List[Dict]:
+def list_image_info(ic_name: str) -> list[dict]:
     ic = ee.ImageCollection(ic_name).filterDate("2020-01-01", "2021-01-01")
     images = ic.toList(1000)
     for image in images.getInfo():
