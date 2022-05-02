@@ -5,7 +5,7 @@ export default function Example() {
 
     React.useEffect(() => {
         async function fetchIndex() {
-            let response = await fetch("https://api.planet-emu.com/");
+            let response = await fetch("https://api.planet-emu.com/mirror/Hello World");
             let data = await response.json();
             setData(data.message);
         }
