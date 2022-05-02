@@ -3,6 +3,7 @@ from aws_cdk import aws_lambda as lambda_, aws_iam as iam, aws_apigateway as api
 from constructs import Construct
 import os
 
+
 class FastAPIStack(cdk.Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -22,9 +23,14 @@ class FastAPIStack(cdk.Stack):
 
         lambda_function.add_to_role_policy(
             iam.PolicyStatement(
-                actions=["s3:*"],
+                actions=[
+                    "s3:*",
+                    "secretsmanager:*",
+                ],
                 resources=["*"],
             )
         )
 
-        rest_api = apigw.LambdaRestApi(self, "fast-api-rest-api", handler=lambda_function)
+        rest_api = apigw.LambdaRestApi(
+            self, "fast-api-rest-api", handler=lambda_function
+        )
