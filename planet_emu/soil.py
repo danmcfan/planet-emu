@@ -5,6 +5,8 @@ warnings.simplefilter("ignore", FutureWarning)
 import geopandas as gpd
 import pandas as pd
 
+from planet_emu import util
+
 LAYER_NAMES = [
     "bulkdens",
     "clay",
@@ -31,9 +33,22 @@ def clean_soil_layer(in_gdf: gpd.GeoDataFrame, layer_name: str) -> pd.DataFrame:
 
 
 def export_soil_counties() -> None:
-    counties = gpd.read_file("./data/geojson/counties.geojson")
+    counties = util.from_geojson("counties")
     for layer_name in LAYER_NAMES:
         soil_gdf = gpd.read_file(f"./data/geojson/{layer_name}.geojson")
         soil_df = clean_soil_layer(soil_gdf, layer_name)
         counties = counties.merge(soil_df, on="fips_code", how="left")
-    counties.to_file("./data/geojson/soil_counties.geojson")
+    util.to_geojson(counties, "soil_counties")
+
+
+def export_soil_summary() -> None:
+    soil_counties = util.from_geojson("soil_counties")
+    summary_dict = dict()
+
+    for layer in LAYER_NAMES:
+        layer_dict = dict()
+        layer_dict["min"] = soil_counties[f"b0_{layer}"].min()
+        layer_dict["max"] = soil_counties[f"b0_{layer}"].max()
+        summary_dict[layer] = layer_dict
+
+    util.to_json(summary_dict, "soil_summary")

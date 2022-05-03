@@ -1,5 +1,6 @@
 from typing import Any
 import pickle
+import json
 import geopandas as gpd
 
 
@@ -47,3 +48,11 @@ def to_csv(
 ) -> None:
     dirname = ".temp" if temp else "data"
     gdf.to_csv(f"{dirname}/csv/{basename}.csv", index=False)
+
+
+def to_json(in_dict: dict, basename: str, temp: bool = False):
+    dirname = ".temp" if temp else "data"
+    filepath = f"{dirname}/json/{basename}.json"
+
+    with open(filepath, "w") as f:
+        json.dump(in_dict, f, indent=4)
