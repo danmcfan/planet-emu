@@ -27,9 +27,14 @@ jobs:
         run: |
           yarn
           python -m pip install --upgrade pip
-          python -m pip install flake8 pytest black
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Synth stack
+        env:
+          BUCKET: ${{ secrets.BUCKET }}
+          JSON_DIR: ${{ secrets.JSON_DIR }}
         run: yarn cdk synth
       - name: Deploy stack
+        env:
+          BUCKET: ${{ secrets.BUCKET }}
+          JSON_DIR: ${{ secrets.JSON_DIR }}
         run: yarn cdk deploy --all --require-approval never
