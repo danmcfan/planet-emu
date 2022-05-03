@@ -37,9 +37,7 @@ def from_geojson(
     temp: bool = False,
 ) -> gpd.GeoDataFrame:
     dirname = ".temp" if temp else "data"
-    return gpd.read_file(
-        f"{dirname}/geojson/{basename}.geojson", driver="GeoJSON"
-    )
+    return gpd.read_file(f"{dirname}/geojson/{basename}.geojson", driver="GeoJSON")
 
 
 def to_csv(
