@@ -13,7 +13,7 @@ export default function LineGraph() {
 
     return (
         <LineChart width={600} height={300} data={data} margin={{ top: 10, right: 20, bottom: 10, left: 40 }}>
-            <Line type="monotone" dataKey="bulkdens" stroke="#000000" />
+            <Line type="monotone" dataKey="bulkdens" stroke="#b03a2e" />
             <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
             <XAxis dataKey="depth" />
             <YAxis domain={[145, 180]} />

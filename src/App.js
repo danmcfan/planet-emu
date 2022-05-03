@@ -17,11 +17,11 @@ export default function App() {
         flexDirection: "column",
         justifyContent: "center"
       }}>
-        <Box sx={{ m: 2 }}>
+        <Box sx={{ m: 0 }}>
           <MapBox />
         </Box >
         <Box sx={{ m: 0, display: "flex", flexDirection: "row", justifyContent: "center" }}>
-          <Box sx={{ m: 2 }}>
+          <Box sx={{ m: 1 }}>
             <LineGraph />
           </Box >
           <Box sx={{ m: 2 }}>
