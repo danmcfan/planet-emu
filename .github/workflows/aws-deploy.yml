@@ -14,6 +14,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
@@ -21,7 +24,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Install dependencies
-        run: yarn
+        run: |
+          yarn
+          python -m pip install --upgrade pip
+          python -m pip install flake8 pytest black
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Synth stack
         run: yarn cdk synth
       - name: Deploy stack
