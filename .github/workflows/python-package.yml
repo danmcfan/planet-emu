@@ -5,22 +5,16 @@ on:
     branches:
       - main
       - develop
-      - release/*
       
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.7", "3.8", "3.9"]
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+      - uses: actions/setup-python@v3
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.9"
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
