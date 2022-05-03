@@ -2,22 +2,14 @@
 A geospatial data processing library built using Google Earth Engine API for Python.
 
 ## GitHub Pages
-[Click here](https://danmcfan.github.io/planet-emu) for the GitHub Pages front-end for this project.
+[Click here](https://danmcfan.github.io/planet-emu) for the GitHub Pages frontend web application.
 
 ## Features
-- Gathers soil and weather properties across the spatial boundary of the contiguous United States.
-- Plots the spatial data into descriptive maps.
+- Executes geospatial queries to Google Earth Engine using AWS Lambda Functions.
+    - Gathers soil, weather, and spectral properties for county boundaries within the contiguous United States.
+- Deploys a JavaScript React web application to GitHub Pages.
+    - Displays the geospatial data as layers within a MapBox component.
+- Creates a simple regression model using TensorFlow to predict the relationship between weather / soil and the normalized difference vegetation index (NDVI).
 
-## Weather Properties
-![Weather Properties - Mean](data/images/weather_properties_mean.png)
-![Weather Properties - Std](data/images/weather_properties_std.png)
-![Weather Properties - Min](data/images/weather_properties_min.png)
-![Weather Properties - Max](data/images/weather_properties_max.png)
-
-## Soil Properties
-![Soil Properties - 0 cm Depth](data/images/soil_properties_0cm.png)
-![Soil Properties - 10 cm Depth](data/images/soil_properties_10cm.png)
-![Soil Properties - 30 cm Depth](data/images/soil_properties_30cm.png)
-![Soil Properties - 60 cm Depth](data/images/soil_properties_60cm.png)
-![Soil Properties - 100 cm Depth](data/images/soil_properties_100cm.png)
-![Soil Properties - 200 cm Depth](data/images/soil_properties_200cm.png)
+## Architecture
+![Architecture](docs/architecture.png)
