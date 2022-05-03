@@ -1,26 +1,21 @@
 import * as React from 'react';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import mapboxgl from '!mapbox-gl';
-import colormap from 'colormap';
 
 import './MapBox.css';
+import { getColorList } from './util';
 
 // const BASE_URL = 'https://api.planet-emu.com';
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGFubnktZGFya28iLCJhIjoiY2t1NjRqY2x0MmVnaDJ2b3c5Z3Q3YWJrZSJ9.lShDY5ieeO3Cdr6U_irlVg';
 
-const fillColorProperty = (layer, soilSummary, nBuckets = 10, colormapOption = "winter") => {
-    let minValue = soilSummary[layer]["min"]
-    let maxValue = soilSummary[layer]["max"]
-    let range = maxValue - minValue;
-    let interval = range / nBuckets;
-    let colors = colormap({ colormap: colormapOption, nshades: nBuckets, format: "hex", alpha: 1 });
-
+const fillColorProperty = (layer, soilSummary) => {
     let colorProperty = ['interpolate',
         ['linear'],
         ['get', `b0_${layer}`]
     ];
-    for (let i = 0; i < nBuckets; i++) {
-        colorProperty = colorProperty.concat(minValue + (i * interval), colors[i]);
+    let colorList = getColorList(layer, soilSummary);
+    for (let item of colorList) {
+        colorProperty = colorProperty.concat(item.value, item.color);
     }
     return colorProperty;
 };
@@ -67,11 +62,6 @@ export default function MapBox(props) {
                     'line-color': '#000',
                     'line-width': 0.25,
                 }
-            });
-
-            map.current.on('click', 'soil', (e) => {
-                const properties = e.features[0].properties;
-                props.setFeatureProperties(properties);
             });
 
             map.current.on('mouseenter', 'soil', () => {

@@ -3,7 +3,6 @@ import warnings
 warnings.simplefilter("ignore", FutureWarning)
 
 import geopandas as gpd
-from dotenv import load_dotenv
 import os
 import time
 
@@ -13,8 +12,6 @@ from planet_emu import util, gee, image, plot
 def main(x: int = 3, y: int = 2, depth: int = 0) -> None:
     if not os.path.isdir(".temp"):
         os.mkdir(".temp")
-
-    load_dotenv()
 
     NAME = os.getenv("GCP_SERVICE_NAME")
     PROJECT = os.getenv("GCP_PROJECT")

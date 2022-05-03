@@ -4,7 +4,6 @@ warnings.simplefilter("ignore", FutureWarning)
 
 import geopandas as gpd
 import pandas as pd
-from dotenv import load_dotenv
 import os
 import time
 
@@ -14,8 +13,6 @@ from planet_emu import util, gee, image, plot
 def main(x: int = 2, y: int = 2, year: int = 2020) -> None:
     if not os.path.isdir(".temp"):
         os.mkdir(".temp")
-
-    load_dotenv()
 
     NAME = os.getenv("GCP_SERVICE_NAME")
     PROJECT = os.getenv("GCP_PROJECT")
@@ -68,12 +65,8 @@ def main(x: int = 2, y: int = 2, year: int = 2020) -> None:
             ]
         ):
             print(f"Adding {column} subplot...")
-            final_gdf = final_gdf.rename(
-                columns=lambda x: x.replace("_stdDev_", "_")
-            )
-            final_gdf[f"{column}_mean"] = pd.to_numeric(
-                final_gdf[f"{column}_mean"]
-            )
+            final_gdf = final_gdf.rename(columns=lambda x: x.replace("_stdDev_", "_"))
+            final_gdf[f"{column}_mean"] = pd.to_numeric(final_gdf[f"{column}_mean"])
             plot_object.add_subplot(
                 final_gdf,
                 f"{column}_mean",
