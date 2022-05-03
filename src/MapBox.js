@@ -1,5 +1,6 @@
 import * as React from 'react';
-import mapboxgl from 'mapbox-gl';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import mapboxgl from '!mapbox-gl';
 
 import './MapBox.css';
 import counties_geojson from './data/bulkdens.geojson';
