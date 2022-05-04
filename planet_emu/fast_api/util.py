@@ -7,26 +7,24 @@ BUCKET = os.getenv("BUCKET")
 JSON_DIR = os.getenv("JSON_DIR")
 
 
-def get_json(basename: str) -> pd.DataFrame:
-    path = f"s3://{BUCKET}/{JSON_DIR}/{basename}.json"
+def get_path(basename: str, ext: str = "json") -> str:
+    return f"s3://{BUCKET}/{JSON_DIR}/{basename}.{ext}"
+
+
+def get_json(basename: str) -> dict:
+    path = get_path(basename)
     if not wr.s3.does_object_exist(path):
-        return pd.DataFrame()
-    return wr.s3.read_json(path)
+        return dict()
+    df = wr.s3.read_json(path)
+    return df.to_dict(orient="records")
 
 
-def set_json(df: pd.DataFrame, basename: str) -> None:
-    path = f"s3://{BUCKET}/{JSON_DIR}/{basename}.json"
+def set_json(records: list[dict], basename: str) -> None:
+    path = get_path(basename)
+    df = pd.DataFrame(records)
     wr.s3.to_json(df, path)
 
 
-def remove_json(basename: str) -> None:
-    path = f"s3://{BUCKET}/{JSON_DIR}/{basename}.json"
+def del_json(basename: str) -> None:
+    path = get_path(basename)
     wr.s3.delete_objects(path)
-
-
-def to_json(df: pd.DataFrame) -> dict:
-    return json.loads(df.to_json(orient="records"))
-
-
-def get_secret(secret_name: str) -> str:
-    return wr.secretsmanager.get_secret_json(secret_name).get("access_token")
