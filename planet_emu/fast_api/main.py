@@ -1,7 +1,6 @@
 from mangum import Mangum
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 import util
 from models import Item
@@ -22,8 +21,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.get("/")

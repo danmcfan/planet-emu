@@ -16,7 +16,7 @@ const mainLayerList = [
 const soilAttributeList = [
     { value: "bulkdens", label: "Bulk Density (10 * kg / m^3)" },
     { value: "clay", label: "Clay Content (%)" },
-    { value: "ph", label: "pH Score" },
+    { value: "ph", label: "Soil pH (10 * pH in H2O)" },
     { value: "sand", label: "Sand Content (%)" },
     { value: "soc", label: "Soil Organic Carbon (5 * g / kg)" },
     { value: "swc", label: "Soil Water Content (%)" },
