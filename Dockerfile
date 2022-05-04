@@ -8,5 +8,3 @@ RUN pip3 install -e .
 
 COPY scripts/decrypt_secret.sh .
 RUN decrypt_secret.sh
-
-CMD [ "planet_emu.fast_api.main.handler" ]

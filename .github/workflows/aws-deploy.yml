@@ -30,11 +30,17 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Synth stack
         env:
+          DECRYPT_PASSWORD: ${{ secrets.DECRYPT_PASSWORD }}
+          GCP_SERVICE_NAME: ${{ secrets.GCP_SERVICE_NAME }}
+          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
           BUCKET: ${{ secrets.BUCKET }}
           JSON_DIR: ${{ secrets.JSON_DIR }}
         run: yarn cdk synth
       - name: Deploy stack
         env:
+          DECRYPT_PASSWORD: ${{ secrets.DECRYPT_PASSWORD }}
+          GCP_SERVICE_NAME: ${{ secrets.GCP_SERVICE_NAME }}
+          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
           BUCKET: ${{ secrets.BUCKET }}
           JSON_DIR: ${{ secrets.JSON_DIR }}
         run: yarn cdk deploy --all --require-approval never
