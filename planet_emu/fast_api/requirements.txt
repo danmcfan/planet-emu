@@ -1,3 +1,0 @@
-fastapi==0.75.2
-mangum==0.15.0
-awswrangler==2.15.1

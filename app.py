@@ -2,7 +2,7 @@ import os
 
 import aws_cdk as cdk
 
-from planet_emu.fast_api.stack import FastAPIStack
+from planet_emu.stack import FastAPIStack
 
 
 app = cdk.App()

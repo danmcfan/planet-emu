@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name="planet_emu",
-    version="0.1.0",
+    version="1.0.0",
     description="Planet Emu",
     author="Danny OBrien",
     author_email="danmcfan33@gmail.com",
@@ -11,5 +11,8 @@ setup(
         "earthengine-api",
         "eeconvert",
         "geopandas",
+        "awswrangler",
+        "fastapi",
+        "mangum",
     ],
 )

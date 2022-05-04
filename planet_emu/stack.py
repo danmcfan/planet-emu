@@ -12,7 +12,7 @@ class FastAPIStack(cdk.Stack):
             self,
             "fast-api-lambda-function",
             function_name="fast-api-lambda-function",
-            code=lambda_.DockerImageCode.from_image_asset("planet_emu/fast_api"),
+            code=lambda_.DockerImageCode.from_image_asset("."),
             timeout=cdk.Duration.seconds(60),
             memory_size=128,
             environment={
@@ -25,7 +25,7 @@ class FastAPIStack(cdk.Stack):
             iam.PolicyStatement(
                 actions=[
                     "s3:*",
-                    "secretsmanager:*",
+                    "lambda:*",
                 ],
                 resources=["*"],
             )

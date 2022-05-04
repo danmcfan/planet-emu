@@ -4,6 +4,9 @@ A geospatial data processing library built using Google Earth Engine API for Pyt
 ## GitHub Pages
 [Click here](https://danmcfan.github.io/planet-emu) for the GitHub Pages frontend web application.
 
+## FastAPI
+[Click here](https://api.planet-emu.com/docs) for the Python FastAPI interactive documentation.
+
 ## Features
 - Executes geospatial queries to Google Earth Engine using AWS Lambda Functions.
     - Gathers soil, weather, and spectral properties for county boundaries within the contiguous United States.
