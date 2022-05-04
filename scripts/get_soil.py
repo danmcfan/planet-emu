@@ -6,71 +6,43 @@ import geopandas as gpd
 import os
 import time
 
-from planet_emu import util, gee, image, plot
+from planet_emu import util, gee, image
 
 
-def main(x: int = 3, y: int = 2, depth: int = 0) -> None:
-    if not os.path.isdir(".temp"):
-        os.mkdir(".temp")
-
+def main() -> None:
     NAME = os.getenv("GCP_SERVICE_NAME")
     PROJECT = os.getenv("GCP_PROJECT")
 
     gee.init(NAME, PROJECT)
 
-    counties_gdf = util.from_pickle("usa_counties")
+    counties_gdf = util.from_geojson("counties")
 
-    plot_object = plot.PlanetPlot(
-        x=x, y=y, title=f"USA Soil Properties - {depth} cm Depth"
-    )
-    for index, (image_object, name, cmap) in enumerate(
-        [
-            (image.BULKDENS_IMG, "bulkdens", "Purples"),
-            (image.CLAY_IMG, "clay", "Reds"),
-            (image.SOC_IMG, "soc", "Greys"),
-            (image.PH_IMG, "ph", "Greens"),
-            (image.SAND_IMG, "sand", "Oranges"),
-            (image.SWC_IMG, "swc", "Blues"),
-        ]
-    ):
-        if os.path.isfile(f"data/pickle/{name}.pickle"):
-            final_gdf = util.from_pickle(name)
+    for (image_object, name) in [
+        (image.BULKDENS_IMG, "bulkdens"),
+        (image.CLAY_IMG, "clay"),
+        (image.SOC_IMG, "soc"),
+        (image.PH_IMG, "ph"),
+        (image.SAND_IMG, "sand"),
+        (image.SWC_IMG, "swc"),
+    ]:
+        if os.path.isfile(f"data/geojson/{name}.geojson"):
+            final_gdf = util.from_geojson(name)
         else:
             final_gdf = gpd.GeoDataFrame()
-            for statefp in counties_gdf["statefp"].sort_values().unique():
+            for state_name in counties_gdf["state_name"].sort_values().unique():
                 t0 = time.perf_counter()
                 result_gdf = image_object.reduce_regions(
-                    counties_gdf.loc[counties_gdf["statefp"] == statefp]
+                    counties_gdf.loc[counties_gdf["state_name"] == state_name]
                 )
                 final_gdf = final_gdf.append(result_gdf, ignore_index=True)
                 print(
-                    f"STATEFP={statefp})",
+                    f"STATE_NAME={state_name}",
                     f"IMAGE={name}",
                     f"TIME={int(time.perf_counter() - t0)}s",
                 )
 
-            util.to_pickle(final_gdf, name)
             util.to_geojson(final_gdf, name)
-
-        print(f"Plotting {name}...")
-        final_gdf = final_gdf.loc[
-            ~final_gdf["statefp"].isin([2, 15, 60, 66, 69, 72, 78])
-        ].copy()
-        plot_object.add_subplot(
-            final_gdf,
-            f"b{depth}_mean",
-            x=index % x,
-            y=index // x,
-            title=name,
-            legend=True,
-            cmap=cmap,
-            ticks=False,
-        )
-
-    print("Saving to PNG...")
-    plot_object.to_png(f"soil_properties_{depth}cm", dpi=300)
 
 
 if __name__ == "__main__":
-    for depth in [0, 10, 30, 60, 100, 200]:
-        main(depth=depth)
+    main()

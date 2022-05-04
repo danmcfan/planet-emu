@@ -3,11 +3,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 import util
+from models import Item
 
 app = FastAPI(
-    title="planet-emu",
-    description="Backend Planet Emulator",
-    version="0.1.0",
+    title="planet-emu-api",
+    description="Planet Emulator API",
+    version="1.0.0",
 )
 
 app.add_middleware(
@@ -24,12 +25,19 @@ app.add_middleware(
 
 @app.get("/")
 def index():
-    return {"message": "index"}
+    return {
+        "message": "Go to https://api.planet-emu.com/docs for complete documentation on the API."
+    }
 
 
-@app.get("/mapbox/access-token")
-def access_token():
-    return {"access_token": util.get_secret("mapbox")}
+@app.get("/geojson/counties")
+def get_counties_geojson():
+    return util.get_json("counties")
+
+
+@app.post("/items/")
+def create_item(item: Item):
+    return item
 
 
 @app.get("/mirror/{item}")
