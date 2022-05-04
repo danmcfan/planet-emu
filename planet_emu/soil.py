@@ -39,19 +39,3 @@ def export_soil_counties() -> None:
         soil_df = clean_soil_layer(soil_gdf, layer_name)
         counties = counties.merge(soil_df, on="fips_code", how="left")
     util.to_geojson(counties, "soil_counties")
-
-
-def export_soil_summary() -> None:
-    soil_counties = util.from_geojson("soil_counties")
-    summary_dict = dict()
-
-    for layer in LAYER_NAMES:
-        layer_dict = dict()
-        for depth in [0, 10, 30, 60, 100, 200]:
-            depth_dict = dict()
-            depth_dict["min"] = soil_counties[f"{layer}_{depth}"].min()
-            depth_dict["max"] = soil_counties[f"{layer}_{depth}"].max()
-            layer_dict[f"depth_{depth}"] = depth_dict
-        summary_dict[layer] = layer_dict
-
-    util.to_json(summary_dict, "soil_summary")

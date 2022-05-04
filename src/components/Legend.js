@@ -5,26 +5,26 @@ import './Legend.css';
 import { getColorList } from './util';
 
 export default function Legend(props) {
-    let colorList = getColorList(props.layer, props.soilSummary);
+    let colorList = getColorList(props.layer, props.attribute, props.depth, props.summary);
     let legendItems = [];
     for (let item of colorList) {
         legendItems.push(
             <Box sx={{
-                m: 0,
+                mr: 4,
                 display: "flex",
                 flexDirection: "row",
-                justifyContent: "space-between",
+                justifyContent: "space-around",
                 alignItems: "center",
             }}>
-                <Box className="legendBox" sx={{ my: 0, mx: 2, backgroundColor: item.color }} />
-                <p>{item.value.toFixed(2)}</p>
+                <Box className="legendBox" sx={{ height: "25px", width: "25px", my: 0, mr: "20px", backgroundColor: item.color }} />
+                <p className="legendLabel">{item.value.toFixed(2)}</p>
             </Box>
         );
     }
 
     return (
-        <div>
+        <Box sx={{ m: 0, display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
             {legendItems}
-        </div>
+        </Box>
     );
 }

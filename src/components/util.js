@@ -1,8 +1,15 @@
 import colormap from 'colormap';
 
-export const getColorList = (layer, soilSummary, nBuckets = 6, colormapOption = 'winter') => {
-    let minValue = soilSummary[layer]["min"]
-    let maxValue = soilSummary[layer]["max"]
+export const getColorList = (layer, attribute, depth, summary, nBuckets = 8, colormapOption = "winter") => {
+    let label;
+    if (["bulkdens", "clay", "ph", "sand", "soc", "swc"].includes(attribute)) {
+        label = `${attribute}_${depth}`
+    } else {
+        label = attribute;
+    }
+
+    let minValue = summary[label]["min"]
+    let maxValue = summary[label]["max"]
     let range = maxValue - minValue;
     let interval = range / nBuckets;
     let colors = colormap({ colormap: colormapOption, nshades: nBuckets, format: "hex", alpha: 1 });

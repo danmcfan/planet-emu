@@ -8,12 +8,19 @@ import { getColorList } from './util';
 // const BASE_URL = 'https://api.planet-emu.com';
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGFubnktZGFya28iLCJhIjoiY2t1NjRqY2x0MmVnaDJ2b3c5Z3Q3YWJrZSJ9.lShDY5ieeO3Cdr6U_irlVg';
 
-const fillColorProperty = (layer, soilSummary) => {
+const fillColorProperty = (layer, attribute, depth, summary) => {
+    let label;
+    if (layer === "soil") {
+        label = `${attribute}_${depth}`
+    } else {
+        label = attribute;
+    }
+
     let colorProperty = ['interpolate',
         ['linear'],
-        ['get', `b0_${layer}`]
+        ['get', label]
     ];
-    let colorList = getColorList(layer, soilSummary);
+    let colorList = getColorList(layer, attribute, depth, summary);
     for (let item of colorList) {
         colorProperty = colorProperty.concat(item.value, item.color);
     }
@@ -30,7 +37,7 @@ export default function MapBox(props) {
             container: mapContainer.current,
             style: 'mapbox://styles/mapbox/streets-v11',
             center: [-97.5, 38],
-            zoom: 3
+            zoom: 3.5
         });
     });
 
@@ -39,7 +46,7 @@ export default function MapBox(props) {
         map.current.on('load', () => {
             map.current.addSource('soil', {
                 type: 'geojson',
-                data: props.soilData,
+                data: props.counties,
             });
 
             map.current.addLayer({
@@ -48,7 +55,7 @@ export default function MapBox(props) {
                 type: 'fill',
                 layout: {},
                 paint: {
-                    'fill-color': fillColorProperty(props.layer, props.soilSummary),
+                    'fill-color': fillColorProperty(props.layer, props.attribute, props.depth, props.summary),
                     'fill-opacity': 0.5,
                 }
             });
@@ -78,8 +85,8 @@ export default function MapBox(props) {
     React.useEffect(() => {
         if (!map.current) return;
         if (!map.current.getPaintProperty("soil", "fill-color")) return;
-        map.current.setPaintProperty("soil", "fill-color", fillColorProperty(props.layer, props.soilSummary));
-    }, [props.layer, props.soilSummary]);
+        map.current.setPaintProperty("soil", "fill-color", fillColorProperty(props.layer, props.attribute, props.depth, props.summary));
+    }, [props.layer, props.attribute, props.depth, props.summary]);
 
     return (
         <div>
