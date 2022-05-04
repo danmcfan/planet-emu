@@ -66,10 +66,12 @@ class PlanetImage:
     def get_image_info(self) -> dict:
         return self.image.getInfo()
 
-    def set_ndvi(self) -> None:
-        self.image = self.image.normalizedDifference(
-            ["sur_refl_b02", "sur_refl_b01"]
-        ).rename("ndvi")
+    def set_ndvi(
+        self, red_band: str = "sur_refl_b01", nir_band: str = "sur_refl_b02"
+    ) -> None:
+        self.image = self.image.normalizedDifference([nir_band, red_band]).rename(
+            "ndvi"
+        )
 
     def reduce_regions(
         self,
