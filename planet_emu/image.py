@@ -67,7 +67,9 @@ class PlanetImage:
         return self.image.getInfo()
 
     def set_ndvi(self) -> None:
-        self.image = self.image.normalizedDifference(["B8", "B4"]).rename("ndvi")
+        self.image = self.image.normalizedDifference(
+            ["sur_refl_b02", "sur_refl_b01"]
+        ).rename("ndvi")
 
     def reduce_regions(
         self,
@@ -80,13 +82,7 @@ class PlanetImage:
         if mode:
             reducer = ee.Reducer.mode()
         else:
-            reducer = (
-                ee.Reducer.mean()
-                .combine(ee.Reducer.stdDev(), sharedInputs=True)
-                .combine(ee.Reducer.min(), sharedInputs=True)
-                .combine(ee.Reducer.median(), sharedInputs=True)
-                .combine(ee.Reducer.max(), sharedInputs=True)
-            )
+            reducer = ee.Reducer.mean()
 
         out_fc = self.image.reduceRegions(
             in_fc,
@@ -102,13 +98,9 @@ WEATHER_IC = PlanetImageCollection(
     "NASA/ORNL/DAYMET_V4",
     1000,
 )
-SENTINEL_IC = PlanetImageCollection(
-    "COPERNICUS/S2_SR_HARMONIZED",
-    10,
-)
-CROP_IC = PlanetImageCollection(
-    "USDA/NASS/CDL",
-    30,
+MODIS_IC = PlanetImageCollection(
+    "MODIS/061/MOD09GQ",
+    250,
 )
 
 BULKDENS_IMG = PlanetImage(
