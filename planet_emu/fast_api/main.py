@@ -2,8 +2,8 @@ from mangum import Mangum
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-import util
-from models import Item
+from planet_emu.fast_api import util
+from planet_emu.fast_api.models import Item
 
 app = FastAPI(
     title="planet-emu-api",
