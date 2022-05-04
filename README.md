@@ -4,7 +4,7 @@ A geospatial data processing library built using Google Earth Engine API for Pyt
 ## GitHub Pages
 [Click here](https://danmcfan.github.io/planet-emu) for the GitHub Pages frontend web application.
 
-## FastAPI
+## Python FastAPI
 [Click here](https://api.planet-emu.com/docs) for the Python FastAPI interactive documentation.
 
 ## Features

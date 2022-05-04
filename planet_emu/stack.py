@@ -8,6 +8,14 @@ class FastAPIStack(cdk.Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        environment = {
+            "DECRYPT_PASSWORD": os.getenv("DECRYPT_PASSWORD"),
+            "GCP_SERVICE_NAME": os.getenv("GCP_SERVICE_NAME"),
+            "GCP_PROJECT": os.getenv("GCP_PROJECT"),
+            "BUCKET": os.getenv("BUCKET"),
+            "JSON_DIR": os.getenv("JSON_DIR"),
+        }
+
         lambda_function = lambda_.DockerImageFunction(
             self,
             "fast-api-lambda-function",
@@ -15,10 +23,7 @@ class FastAPIStack(cdk.Stack):
             code=lambda_.DockerImageCode.from_image_asset("."),
             timeout=cdk.Duration.seconds(60),
             memory_size=128,
-            environment={
-                "BUCKET": os.getenv("BUCKET"),
-                "JSON_DIR": os.getenv("JSON_DIR"),
-            },
+            environment=environment,
         )
 
         lambda_function.add_to_role_policy(
