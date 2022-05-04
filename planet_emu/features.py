@@ -1,4 +1,4 @@
-from planet_emu import util
+from planet_emu import util, predict
 
 
 def export_features() -> None:
@@ -32,5 +32,19 @@ def export_features() -> None:
         ndvi_gdf, on="fips_code", how="left"
     )
     final_gdf = final_gdf.sort_values("fips_code")
+    final_gdf = final_gdf.drop(columns=["geometry"])
 
-    util.to_csv(final_gdf.drop(columns=["geometry"]), "features")
+    counties_gdf = util.from_geojson("counties")
+    counties_gdf = counties_gdf.merge(final_gdf, on="fips_code", how="left")
+    counties_gdf = counties_gdf.sort_values("fips_code")
+
+    linear_model = predict.load_model("data/model/linear")
+    dnn_model = predict.load_model("data/model/dnn")
+
+    features_df = final_gdf.drop(columns=["fips_code", "ndvi"])
+    counties_gdf["linear_ndvi"] = linear_model.predict(features_df).flatten()
+    counties_gdf["dnn_ndvi"] = dnn_model.predict(features_df).flatten()
+
+    util.to_csv(final_gdf, "features")
+    util.to_csv(counties_gdf, "counties_full")
+    util.to_geojson(counties_gdf, "counties_full")
