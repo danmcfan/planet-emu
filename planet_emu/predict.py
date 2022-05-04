@@ -29,18 +29,25 @@ def get_model(
     loss: str = "mean_absolute_percentage_error",
     epochs: int = 100,
     validation_split: float = 0.2,
+    linear: bool = False,
 ) -> Any:
     normalizer = layers.Normalization()
     normalizer.adapt(train_features)
 
-    model = tf.keras.Sequential(
-        [
+    if linear:
+        layers_list = [
+            normalizer,
+            layers.Dense(1),
+        ]
+    else:
+        layers_list = [
             normalizer,
             layers.Dense(64, activation="relu"),
             layers.Dense(64, activation="relu"),
             layers.Dense(1),
         ]
-    )
+
+    model = tf.keras.Sequential(layers_list)
 
     model.compile(
         optimizer=tf.optimizers.Adam(learning_rate=learning_rate),
