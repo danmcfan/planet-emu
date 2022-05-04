@@ -21,7 +21,9 @@ class FastAPIStack(cdk.Stack):
             "fast-api-lambda-function",
             function_name="fast-api-lambda-function",
             code=lambda_.DockerImageCode.from_image_asset(
-                ".", cmd=["planet_emu.fast_api.main.handler"]
+                ".",
+                cmd=["planet_emu.fast_api.main.handler"],
+                build_args={"DECRYPT_PASSWORD": os.getenv("DECRYPT_PASSWORD")},
             ),
             timeout=cdk.Duration.seconds(60),
             memory_size=128,
