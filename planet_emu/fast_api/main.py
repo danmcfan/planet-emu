@@ -52,7 +52,7 @@ def submit_job(point: Point):
     return data
 
 
-@app.post("/status/{job_id}")
+@app.get("/status/{job_id}")
 def get_status(job_id: str):
     data = util.get_json(job_id)
 

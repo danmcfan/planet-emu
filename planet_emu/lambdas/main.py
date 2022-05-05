@@ -9,16 +9,18 @@ import pandas as pd
 import os
 
 from planet_emu import gee
+
+NAME = os.getenv("GCP_SERVICE_NAME")
+PROJECT = os.getenv("GCP_PROJECT")
+
+gee.init(NAME, PROJECT, "service_account.json")
+
 from planet_emu import image
 from planet_emu import predict
 from planet_emu.fast_api import util
 
 
 def handler(event: dict, context: Any) -> dict:
-    NAME = os.getenv("GCP_SERVICE_NAME")
-    PROJECT = os.getenv("GCP_PROJECT")
-
-    gee.init(NAME, PROJECT, "service_account.json")
 
     year = event.get("year", 2020)
 
