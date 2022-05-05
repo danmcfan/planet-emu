@@ -14,5 +14,6 @@ setup(
         "awswrangler",
         "fastapi",
         "mangum",
+        "tensorflow",
     ],
 )

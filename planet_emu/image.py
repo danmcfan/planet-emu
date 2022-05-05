@@ -3,14 +3,6 @@ from dataclasses import dataclass
 import ee
 import eeconvert
 import geopandas as gpd
-import os
-
-from planet_emu import gee
-
-NAME = os.getenv("GCP_SERVICE_NAME")
-PROJECT = os.getenv("GCP_PROJECT")
-
-gee.init(NAME, PROJECT)
 
 
 @dataclass

@@ -8,12 +8,18 @@ import geopandas as gpd
 import pandas as pd
 import os
 
+from planet_emu import gee
 from planet_emu import image
 from planet_emu import predict
 from planet_emu.fast_api import util
 
 
 def handler(event: dict, context: Any) -> dict:
+    NAME = os.getenv("GCP_SERVICE_NAME")
+    PROJECT = os.getenv("GCP_PROJECT")
+
+    gee.init(NAME, PROJECT, "service_account.json")
+
     year = event.get("year", 2020)
 
     x, y, job_id = event["x"], event["y"], event["job_id"]

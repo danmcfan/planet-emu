@@ -12,3 +12,5 @@ ENV DECRYPT_PASSWORD=${DECRYPT_PASSWORD}
 COPY service_account.json.gpg ./service_account.json.gpg
 COPY scripts/decrypt_secret.sh ./decrypt_secret.sh
 RUN bash decrypt_secret.sh
+
+RUN cp /root/secrets/service_account.json ${LAMBDA_TASK_ROOT}/service_account.json

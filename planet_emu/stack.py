@@ -9,6 +9,7 @@ class FastAPIStack(cdk.Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         environment = {
+            "HOME": "/root",
             "DECRYPT_PASSWORD": os.getenv("DECRYPT_PASSWORD"),
             "GCP_SERVICE_NAME": os.getenv("GCP_SERVICE_NAME"),
             "GCP_PROJECT": os.getenv("GCP_PROJECT"),

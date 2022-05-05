@@ -1,5 +1,5 @@
 # planet-emu
-A geospatial data processing library built using Google Earth Engine API for Python.
+A fullstack project that gathers, displays, models, and predicts soil, weather, and spectral features by spatial boundaries.
 
 ## GitHub Pages
 [Click here](https://danmcfan.github.io/planet-emu) for the GitHub Pages frontend web application.
