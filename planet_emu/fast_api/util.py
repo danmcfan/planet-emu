@@ -1,6 +1,7 @@
 import awswrangler as wr
 import pandas as pd
 import os
+import boto3
 import json
 
 BUCKET = os.getenv("BUCKET")
@@ -25,6 +26,22 @@ def set_json(records: list[dict], basename: str) -> None:
     wr.s3.to_json(df, path)
 
 
-def del_json(basename: str) -> None:
-    path = get_path(basename)
-    wr.s3.delete_objects(path)
+def invoke_job(x: float, y: float, job_id: str) -> None:
+    data = {
+        "x": x,
+        "y": y,
+        "job_id": job_id,
+        "status": "pending",
+    }
+    set_json(
+        [data],
+        job_id,
+    )
+
+    # client = boto3.client("lambda")
+    # client.invoke_async(
+    #     FunctionName="get-point-features",
+    #     InvokeArgs=json.dumps({"x": x, "y": y, "job_id": job_id}),
+    # )
+
+    return data

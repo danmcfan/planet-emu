@@ -1,9 +1,17 @@
 from mangum import Mangum
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+from uuid import uuid4
 
 from planet_emu.fast_api import util
-from planet_emu.fast_api.models import Item
+
+
+class Point(BaseModel):
+    x: float
+    y: float
+
 
 app = FastAPI(
     title="planet-emu-api",
@@ -26,51 +34,50 @@ app.add_middleware(
 @app.get("/")
 def index():
     return {
-        "message": "Go to https://api.planet-emu.com/docs for complete documentation on the API."
+        "message": "Go to https://api.planet-emu.com/docs for complete API documentation."
     }
 
 
-@app.get("/geojson/counties")
-def get_counties_geojson():
-    return util.get_json("counties")
+@app.post("/submit/")
+def submit_job(point: Point):
+    if not (-124.763068 <= point.x <= -66.949895):
+        return {"point": point, "error": "X coordinate is out of range"}
+    if not (24.523096 <= point.y <= 49.384358):
+        return {"point": point, "error": "Y coordinate is out of range"}
+
+    job_id = uuid4().hex[:8]
+
+    data = util.invoke_job(point.x, point.y, job_id)
+
+    return data
 
 
-@app.post("/items/")
-def create_item(item: Item):
-    return item
+@app.post("/status/{job_id}")
+def get_status(job_id: str):
+    data = util.get_json(job_id)
 
+    if not data:
+        raise HTTPException(400, "Job not found")
 
-@app.get("/mirror/{item}")
-def mirror(item: str):
     return {
-        "message": item,
+        "job_id": job_id,
+        "status": data[0]["status"],
     }
 
 
-@app.get("/add/{item}")
-def add_item(item: str):
-    df = util.get_json("items")
-    df = df.append({"item": item}, ignore_index=True)
-    util.set_json(df, "items")
+@app.get("/results/{job_id}")
+def get_results(job_id: str):
+    data = util.get_json(job_id)
+
+    if not data:
+        raise HTTPException(400, "Job not found")
+
+    if data[0]["status"] == "pending":
+        raise HTTPException(400, "Job is still pending")
+
     return {
-        "message": f"Added {item}",
-        "item": item,
-    }
-
-
-@app.get("/get/items")
-def get_items():
-    df = util.get_json("items")
-    return {
-        "data": util.to_json(df),
-    }
-
-
-@app.get("/delete/items")
-def delete_items():
-    util.remove_json("items")
-    return {
-        "message": "Deleted all items",
+        "job_id": job_id,
+        "data": data[0],
     }
 
 

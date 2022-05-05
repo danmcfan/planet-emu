@@ -37,7 +37,7 @@ export default function MapBox(props) {
             container: mapContainer.current,
             style: 'mapbox://styles/mapbox/streets-v11',
             center: [-97.5, 38],
-            zoom: 3.5
+            zoom: 3
         });
     });
 

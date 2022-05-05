@@ -16,7 +16,7 @@ class FastAPIStack(cdk.Stack):
             "JSON_DIR": os.getenv("JSON_DIR"),
         }
 
-        lambda_function = lambda_.DockerImageFunction(
+        fast_api_function = lambda_.DockerImageFunction(
             self,
             "fast-api-lambda-function",
             function_name="fast-api-lambda-function",
@@ -30,7 +30,31 @@ class FastAPIStack(cdk.Stack):
             environment=environment,
         )
 
-        lambda_function.add_to_role_policy(
+        fast_api_function.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "s3:*",
+                    "lambda:*",
+                ],
+                resources=["*"],
+            )
+        )
+
+        features_lambda_function = lambda_.DockerImageFunction(
+            self,
+            "get-point-features-lambda-function",
+            function_name="get-point-features",
+            code=lambda_.DockerImageCode.from_image_asset(
+                ".",
+                cmd=["planet_emu.fast_api.main.handler"],
+                build_args={"DECRYPT_PASSWORD": os.getenv("DECRYPT_PASSWORD")},
+            ),
+            timeout=cdk.Duration.seconds(300),
+            memory_size=1024,
+            environment=environment,
+        )
+
+        features_lambda_function.add_to_role_policy(
             iam.PolicyStatement(
                 actions=[
                     "s3:*",
@@ -41,5 +65,5 @@ class FastAPIStack(cdk.Stack):
         )
 
         rest_api = apigw.LambdaRestApi(
-            self, "fast-api-rest-api", handler=lambda_function
+            self, "fast-api-rest-api", handler=fast_api_function
         )
