@@ -46,7 +46,7 @@ class FastAPIStack(cdk.Stack):
             function_name="get-point-features",
             code=lambda_.DockerImageCode.from_image_asset(
                 ".",
-                cmd=["planet_emu.fast_api.main.handler"],
+                cmd=["planet_emu.lambdas.main.handler"],
                 build_args={"DECRYPT_PASSWORD": os.getenv("DECRYPT_PASSWORD")},
             ),
             timeout=cdk.Duration.seconds(300),

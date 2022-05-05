@@ -38,10 +38,10 @@ def invoke_job(x: float, y: float, job_id: str) -> None:
         job_id,
     )
 
-    # client = boto3.client("lambda")
-    # client.invoke_async(
-    #     FunctionName="get-point-features",
-    #     InvokeArgs=json.dumps({"x": x, "y": y, "job_id": job_id}),
-    # )
+    client = boto3.client("lambda")
+    client.invoke_async(
+        FunctionName="get-point-features",
+        InvokeArgs=json.dumps({"x": x, "y": y, "job_id": job_id}),
+    )
 
     return data
