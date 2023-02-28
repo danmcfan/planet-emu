@@ -1,7 +1,11 @@
 <script lang="ts">
-    import Dropdown from "../components/Dropdown.svelte";
     import MapBox from "../components/MapBox.svelte";
+    import Dropdown from "../components/Dropdown.svelte";
+    import Legend from "../components/Legend.svelte";
+
+    import { getColorOptions } from "../components/color";
     import type { Choice } from "../types";
+    import countyData from "$lib/data/california.json";
 
     const layerChoices: Choice[] = [
         { id: "soil", value: "Soil" },
@@ -73,27 +77,39 @@
         ndviAttribute,
         depth
     );
+
+    $: values = countyData.features.map(
+        (feature) => feature.properties[column]
+    );
+    $: colorOptions = getColorOptions(values);
 </script>
 
-<MapBox {column} />
+<MapBox {column} {colorOptions} {countyData} />
 
-<div class="grid grid-cols-3 justify-between mt-5">
-    <Dropdown bind:selected={layer} choices={layerChoices} />
+<div class="grid grid-cols-3 justify-between mt-1">
+    <Dropdown bind:selected={layer} choices={layerChoices} label="Layer" />
     {#if layer.id === "soil"}
         <Dropdown
             bind:selected={soilAttribute}
             choices={soilAttributeChoices}
+            label="Attribute"
         />
-        <Dropdown bind:selected={depth} choices={depthChoices} />
+        <Dropdown bind:selected={depth} choices={depthChoices} label="Depth" />
     {:else if layer.id === "weather"}
         <Dropdown
             bind:selected={weatherAttribute}
             choices={weatherAttributeChoices}
+            label="Attribute"
         />
     {:else if layer.id === "ndvi"}
         <Dropdown
             bind:selected={ndviAttribute}
             choices={ndviAttributeChoices}
+            label="Attribute"
         />
     {/if}
+</div>
+
+<div class="flex justify-center mt-5">
+    <Legend {colorOptions} />
 </div>

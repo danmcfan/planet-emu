@@ -3,20 +3,18 @@
     import mapboxgl from "mapbox-gl";
 
     import { PUBLIC_MAPBOX_TOKEN } from "$env/static/public";
-    import california from "$lib/data/california.json";
-    import { getPaintProperty } from "./color";
+    import { getFillColor } from "./color";
+    import type { ColorOption } from "../types";
 
     export let column: string;
+    export let colorOptions: ColorOption[];
+    export let countyData: any;
 
     let map: mapboxgl.Map;
     let mapRef: HTMLDivElement;
     let countiesSource = "counties";
 
-    $: values = california.features.map(
-        (feature) => feature.properties[column]
-    );
-
-    $: paintProperty = getPaintProperty(column, values);
+    $: fillColor = getFillColor(column, colorOptions);
 
     onMount(async () => {
         mapboxgl.accessToken = PUBLIC_MAPBOX_TOKEN;
@@ -26,12 +24,13 @@
             style: "mapbox://styles/mapbox/streets-v11",
             center: [-120.0, 37.5],
             zoom: 4.5,
+            attributionControl: false,
         });
 
         map.on("load", () => {
             map.addSource(countiesSource, {
                 type: "geojson",
-                data: california,
+                data: countyData,
             });
 
             map.addLayer({
@@ -39,7 +38,10 @@
                 type: "fill",
                 source: countiesSource,
                 layout: {},
-                paint: paintProperty,
+                paint: {
+                    "fill-color": fillColor,
+                    "fill-opacity": 0.75,
+                },
             });
 
             map.addLayer({
@@ -53,6 +55,19 @@
                 },
             });
 
+            map.on("click", "values", (e) => {
+                const { properties } = e.features[0];
+                const { county_name, state_name } = properties;
+                const value = Math.round(properties[column] * 100) / 100;
+
+                const popup = new mapboxgl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(
+                        `<h3>${county_name}, ${state_name}</h3><p>${value}</p>`
+                    )
+                    .addTo(map);
+            });
+
             map.on("mouseenter", "values", () => {
                 map.getCanvas().style.cursor = "pointer";
             });
@@ -60,16 +75,16 @@
             map.on("mouseleave", "values", () => {
                 map.getCanvas().style.cursor = "";
             });
+
+            map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+            map.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
+            map.addControl(new mapboxgl.GeolocateControl(), "bottom-right");
         });
     });
 
     afterUpdate(() => {
         if (map) {
-            map.setPaintProperty(
-                "values",
-                "fill-color",
-                paintProperty["fill-color"]
-            );
+            map.setPaintProperty("values", "fill-color", fillColor);
         }
     });
 </script>

@@ -1,7 +1,7 @@
 <script>
     let items = [
         { title: "Planet Emu", href: "/" },
-        { title: "GitHub", href: "https://github.com/danmcfan" },
+        { title: "GitHub", href: "https://github.com/danmcfan/planet-emu" },
     ];
 </script>
 
