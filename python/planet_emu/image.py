@@ -1,5 +1,6 @@
-from typing import Optional
 from dataclasses import dataclass
+from typing import Optional
+
 import ee
 import eeconvert
 import geopandas as gpd

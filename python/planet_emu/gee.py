@@ -1,11 +1,12 @@
-from typing import Optional
+import io
+import os
+from typing import Optional, Any
+
 import ee
 import eeconvert
 import geopandas as gpd
 import numpy as np
 import requests
-import os
-import io
 
 
 def init(
@@ -23,11 +24,15 @@ def init(
     ee.Initialize(credentials)
 
 
-def list_image_info(ic_name: str) -> list[dict]:
-    ic = ee.ImageCollection(ic_name).filterDate("2020-01-01", "2021-01-01")
-    images = ic.toList(1000)
-    for image in images.getInfo():
-        print(image["id"])
+def list_image_info(
+    name: str,
+    start_date: str = "2020-01-01",
+    end_date: str = "2021-01-01",
+    max_length: int = 1000,
+) -> list[dict[str, Any]]:
+    ic = ee.ImageCollection(name).filterDate(start_date, end_date)
+    images = ic.toList(max_length)
+    return images.getInfo()
 
 
 def get_mean_image_sample(

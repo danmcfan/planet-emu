@@ -1,9 +1,9 @@
-from mangum import Mangum
+from uuid import uuid4
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 from pydantic import BaseModel
-
-from uuid import uuid4
 
 from planet_emu.fast_api import util
 

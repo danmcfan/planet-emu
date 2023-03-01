@@ -1,7 +1,7 @@
-from shapely import geometry
-import geopandas as gpd
 import random
 
+import geopandas as gpd
+from shapely import geometry
 
 CENTROID = geometry.Point(
     random.uniform(-100, -80),

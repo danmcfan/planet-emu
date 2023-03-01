@@ -1,6 +1,7 @@
-from typing import Any
-import pickle
 import json
+import pickle
+from typing import Any
+
 import geopandas as gpd
 
 

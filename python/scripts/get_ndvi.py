@@ -2,11 +2,12 @@ import warnings
 
 warnings.simplefilter("ignore", FutureWarning)
 
-import geopandas as gpd
 import os
 import time
 
-from planet_emu import util, gee, image
+import geopandas as gpd
+
+from planet_emu import gee, image, util
 
 
 def main(year: int = 2020) -> None:

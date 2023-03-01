@@ -1,9 +1,10 @@
-import pandas as pd
-import numpy as np
-import click
 import os
 
-from planet_emu import util, predict
+import click
+import numpy as np
+import pandas as pd
+
+from planet_emu import predict, util
 
 
 @click.command()

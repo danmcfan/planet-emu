@@ -1,4 +1,4 @@
-from planet_emu import util, predict
+from planet_emu import predict, util
 
 
 def export_features() -> None:

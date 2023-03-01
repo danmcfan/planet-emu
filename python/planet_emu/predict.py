@@ -1,7 +1,8 @@
 from typing import Any
+
+import pandas as pd
 import tensorflow as tf
 from tensorflow.keras import layers
-import pandas as pd
 
 
 def split_dataset(

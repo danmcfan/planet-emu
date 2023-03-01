@@ -1,8 +1,9 @@
-import awswrangler as wr
-import pandas as pd
-import os
-import boto3
 import json
+import os
+
+import awswrangler as wr
+import boto3
+import pandas as pd
 
 BUCKET = os.getenv("BUCKET")
 JSON_DIR = os.getenv("JSON_DIR")

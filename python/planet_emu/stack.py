@@ -1,7 +1,10 @@
-import aws_cdk as cdk
-from aws_cdk import aws_lambda as lambda_, aws_iam as iam, aws_apigateway as apigw
-from constructs import Construct
 import os
+
+import aws_cdk as cdk
+from aws_cdk import aws_apigateway as apigw
+from aws_cdk import aws_iam as iam
+from aws_cdk import aws_lambda as lambda_
+from constructs import Construct
 
 
 class FastAPIStack(cdk.Stack):

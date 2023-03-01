@@ -1,12 +1,13 @@
-from typing import Any
 import warnings
+from typing import Any
 
 warnings.simplefilter("ignore", FutureWarning)
 
-from shapely import geometry
+import os
+
 import geopandas as gpd
 import pandas as pd
-import os
+from shapely import geometry
 
 from planet_emu import gee
 
@@ -15,13 +16,11 @@ PROJECT = os.getenv("GCP_PROJECT")
 
 gee.init(NAME, PROJECT, "service_account.json")
 
-from planet_emu import image
-from planet_emu import predict
+from planet_emu import image, predict
 from planet_emu.fast_api import util
 
 
 def handler(event: dict, context: Any) -> dict:
-
     year = event.get("year", 2020)
 
     x, y, job_id = event["x"], event["y"], event["job_id"]
@@ -31,7 +30,7 @@ def handler(event: dict, context: Any) -> dict:
     gdf = gpd.GeoDataFrame(geometry=[circle], crs="EPSG:4326")
 
     data = {}
-    for (image_object, name) in [
+    for image_object, name in [
         (image.BULKDENS_IMG, "bulkdens"),
         (image.CLAY_IMG, "clay"),
         (image.PH_IMG, "ph"),
@@ -46,7 +45,7 @@ def handler(event: dict, context: Any) -> dict:
         )
         data.update(result_gdf.to_dict(orient="records")[0])
 
-    for (image_collection_object, name) in [
+    for image_collection_object, name in [
         (image.WEATHER_IC, "weather"),
         (image.MODIS_IC, "modis"),
     ]:

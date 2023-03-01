@@ -2,11 +2,12 @@ import warnings
 
 warnings.simplefilter("ignore", FutureWarning)
 
-import geopandas as gpd
 import os
 import time
 
-from planet_emu import util, gee, image
+import geopandas as gpd
+
+from planet_emu import gee, image, util
 
 
 def main() -> None:
@@ -17,7 +18,7 @@ def main() -> None:
 
     counties_gdf = util.from_geojson("counties")
 
-    for (image_object, name) in [
+    for image_object, name in [
         (image.BULKDENS_IMG, "bulkdens"),
         (image.CLAY_IMG, "clay"),
         (image.SOC_IMG, "soc"),
