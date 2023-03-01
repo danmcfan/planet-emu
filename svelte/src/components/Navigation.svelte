@@ -1,6 +1,8 @@
 <script>
+    import {base} from "$app/paths";
+
     let items = [
-        { title: "Planet Emu", href: "/" },
+        { title: "Planet Emu", href: base },
         { title: "GitHub", href: "https://github.com/danmcfan/planet-emu" },
     ];
 </script>
