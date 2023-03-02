@@ -16,9 +16,13 @@
     <div class="flex flex-row justify-center">
         {#each colorOptions as colorOption (colorOption.color)}
             <div
-                style="background-color: {colorOption.color}"
                 class="w-8 h-4 border-black border-solid border-2 border-l-0 first:border-l-2"
-            />
+            >
+                <div
+                    style="background-color: {colorOption.color}; opacity: 0.75;"
+                    class="w-full h-full"
+                />
+            </div>
         {/each}
     </div>
     <p class="text-sm text-center font-bold w-20 mx-4">
