@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        font-size: 12px;
+    }
+
+    @screen md {
+        :root {
+            font-size: 14px;
+        }
+    }
+
+    @screen lg {
+        :root {
+            font-size: 16px;
+        }
+    }
+
+    @screen xl {
+        :root {
+            font-size: 18px;
+        }
+    }
+
+    @screen 2xl {
+        :root {
+            font-size: 20px;
+        }
+    }
+}

@@ -7,7 +7,7 @@
 </script>
 
 <div class="flex flex-col content-center">
-    <p class="font-bold text-center">{label}</p>
+    <p class="font-bold text-center mb-4">{label}</p>
     <select
         bind:value={selected}
         class="w-5/6 mx-auto text-center border-solid` border-gray-400 border-2 rounded-lg"

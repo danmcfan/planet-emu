@@ -3,7 +3,7 @@
     import mapboxgl from "mapbox-gl";
 
     import { PUBLIC_MAPBOX_TOKEN } from "$env/static/public";
-    import { getFillColor } from "./color";
+    import { getFillColor } from "./legend/color";
     import type { ColorOption } from "../types";
 
     export let column: string;
@@ -63,7 +63,7 @@
                 const popup = new mapboxgl.Popup()
                     .setLngLat(e.lngLat)
                     .setHTML(
-                        `<h3>${county_name}, ${state_name}</h3><p>${value}</p>`
+                        `<h3>${county_name}, ${state_name}</h3><p><b>${value}</b></p>`
                     )
                     .addTo(map);
             });

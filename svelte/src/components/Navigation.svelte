@@ -1,5 +1,5 @@
 <script>
-    import {base} from "$app/paths";
+    import { base } from "$app/paths";
 
     let items = [
         { title: "Planet Emu", href: base },
@@ -7,7 +7,9 @@
     ];
 </script>
 
-<div class="h-16 w-auto bg-blue-600 grid grid-cols-2">
+<div
+    class="h-16 w-full bg-blue-600 grid grid-cols-2 border-b-2 border-black border-solid"
+>
     {#each items as item}
         <a
             href={item.href}
