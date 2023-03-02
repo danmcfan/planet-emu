@@ -23,7 +23,7 @@
             container: mapRef,
             style: "mapbox://styles/mapbox/streets-v11",
             center: [-120.0, 37.5],
-            zoom: 4.5,
+            zoom: 4,
             attributionControl: false,
         });
 
@@ -89,6 +89,8 @@
     });
 </script>
 
-<div class="h-4/6 w-auto">
+<div
+    class="h-[20rem] sm:h-[28rem] w-auto border-b-[0.1rem] border-black border-solid"
+>
     <div bind:this={mapRef} class="w-full h-full m-0 p-0" />
 </div>

@@ -1,23 +1,36 @@
-<script>
-    import { base } from "$app/paths";
+<script lang="ts">
+    import "iconify-icon";
 
-    let items = [
-        { title: "Planet Emu", href: base },
-        { title: "GitHub", href: "https://github.com/danmcfan/planet-emu" },
-    ];
+    const githubLink = "https://github.com/danmcfan/planet-emu";
 </script>
 
 <div
-    class="h-16 w-full bg-blue-600 grid grid-cols-2 border-b-2 border-black border-solid"
+    class="h-12 w-full sm:h-16
+           relative flex flex-row justify-between items-center
+           bg-blue-600 border-b-[0.1rem] border-black border-solid"
 >
-    {#each items as item}
-        <a
-            href={item.href}
-            class="flex items-center justify-center text-white font-bold text-2xl hover:cursor-pointer hover:text-gray-300"
+    <div
+        class="group flex flex-row justify-center items-center mx-4 sm:mx-8 hover:cursor-pointer"
+    >
+        <iconify-icon
+            icon="ri:earth-fill"
+            class="text-white group-hover:text-black text-[2rem] sm:text-[2.5rem]"
+        />
+        <div
+            class="text-white group-hover:text-black font-bold text-xl sm:text-2xl ml-4"
         >
-            {item.title}
-        </a>
-    {/each}
+            Planet Emu
+        </div>
+    </div>
+    <a
+        class="group mx-4 sm:mx-8 flex flex-row justify-center items-center hover:cursor-pointer"
+        href={githubLink}
+    >
+        <iconify-icon
+            icon="mdi:github"
+            class="text-white group-hover:text-black text-[2rem] sm:text-[2.5rem]"
+        />
+    </a>
 </div>
 
 <style>

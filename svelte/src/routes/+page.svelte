@@ -1,6 +1,6 @@
 <script lang="ts">
     import MapBox from "../components/MapBox.svelte";
-    import ButtonSelection from "../components/ButtonSelection.svelte";
+    import Selection from "../components/Selection.svelte";
     import Dropdown from "../components/Dropdown.svelte";
     import Slider from "../components/Slider.svelte";
     import Legend from "../components/legend/Legend.svelte";
@@ -10,9 +10,13 @@
     import countyData from "$lib/data/california.json";
 
     const layerChoices: Choice[] = [
-        { id: "soil", value: "Soil" },
-        { id: "weather", value: "Weather" },
-        { id: "ndvi", value: "NDVI" },
+        { id: "soil", value: "Soil", icon: "mdi:shovel" },
+        { id: "weather", value: "Weather", icon: "bi:cloud-rain-fill" },
+        {
+            id: "ndvi",
+            value: "Vegetation",
+            icon: "material-symbols:potted-plant-rounded",
+        },
     ];
 
     const soilAttributeChoices: Choice[] = [
@@ -89,36 +93,24 @@
 <Legend {colorOptions} />
 <MapBox {column} {colorOptions} {countyData} />
 
-<div class="border-t-2 border-solid border-black">
-    <div class="grid grid-cols-3 justify-between items-start mt-1">
-        <ButtonSelection
-            bind:selected={layer}
-            choices={layerChoices}
-            label="Layer"
-        />
-        {#if layer.id === "soil"}
-            <Dropdown
-                bind:selected={soilAttribute}
-                choices={soilAttributeChoices}
-                label="Attribute"
-            />
-            <Slider
-                bind:selected={depth}
-                choices={depthChoices}
-                label="Depth"
-            />
-        {:else if layer.id === "weather"}
-            <Dropdown
-                bind:selected={weatherAttribute}
-                choices={weatherAttributeChoices}
-                label="Attribute"
-            />
-        {:else if layer.id === "ndvi"}
-            <Dropdown
-                bind:selected={ndviAttribute}
-                choices={ndviAttributeChoices}
-                label="Attribute"
-            />
-        {/if}
-    </div>
-</div>
+<Selection bind:selected={layer} choices={layerChoices} label="Layer" />
+{#if layer.id === "soil"}
+    <Dropdown
+        bind:selected={soilAttribute}
+        choices={soilAttributeChoices}
+        label="Attribute"
+    />
+    <Slider bind:selected={depth} choices={depthChoices} label="Depth" />
+{:else if layer.id === "weather"}
+    <Dropdown
+        bind:selected={weatherAttribute}
+        choices={weatherAttributeChoices}
+        label="Attribute"
+    />
+{:else if layer.id === "ndvi"}
+    <Dropdown
+        bind:selected={ndviAttribute}
+        choices={ndviAttributeChoices}
+        label="Attribute"
+    />
+{/if}
