@@ -2,9 +2,10 @@ import logging
 import os
 import random
 
-from dotenv import load_dotenv
 import ee
 import geopandas as gpd
+import numpy as np
+from dotenv import load_dotenv
 from shapely import geometry
 
 from planet_emu.gee import (
@@ -14,7 +15,6 @@ from planet_emu.gee import (
     init,
     list_image_info,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -29,11 +29,11 @@ for _ in range(10):
     y = random.uniform(30, 50)
 
     centroid = geometry.Point(x, y)
-    polygon = centroid.buffer(0.001)
+    polygon = centroid.buffer(0.0001)
 
     polygons.append(polygon)
 
-input_gdf = gpd.GeoDataFrame(geometry=polygons, crs="EPSG:4326")
+input_gdf = gpd.GeoDataFrame(geometry=polygons, crs="EPSG:4326")  # type: ignore
 
 
 def test_vars() -> None:
@@ -42,7 +42,7 @@ def test_vars() -> None:
 
 
 def test_init() -> None:
-    init(NAME, PROJECT, "service_account.json")
+    init(NAME, PROJECT)  # type: ignore
 
 
 def test_get_image_collection_info():
@@ -70,5 +70,29 @@ def test_get_mean_image_sample():
 
     assert isinstance(output_gdf, gpd.GeoDataFrame)
     assert len(output_gdf) > 0
+    assert output_gdf.columns.tolist() == [
+        "dayl",
+        "prcp",
+        "srad",
+        "swe",
+        "tmax",
+        "tmin",
+        "vp",
+        "geometry",
+    ]
 
-    output_gdf.to_csv(".temp/output.csv")
+
+def test_get_rgb_numpy_array():
+    output = get_rgb_numpy_array(input_gdf, 2020, 100_000)
+
+    assert isinstance(output, np.ndarray)
+    assert len(output) == 202
+
+
+def test_get_rgb_tif():
+    output_tif = ".temp/output.tif"
+    get_rgb_tif(output_tif, input_gdf, 2020, 100_000)
+
+    assert os.path.exists(output_tif)
+
+    os.remove(output_tif)

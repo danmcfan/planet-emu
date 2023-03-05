@@ -1,6 +1,6 @@
 import io
 import os
-from typing import Optional, Any
+from typing import Any, Optional
 
 import ee
 import eeconvert
@@ -100,7 +100,7 @@ def get_rgb_tif(
     in_gdf: gpd.GeoDataFrame,
     year: int,
     scale: float = 10,
-) -> np.ndarray:
+) -> None:
     in_fc = eeconvert.gdfToFc(in_gdf)
     feature = in_fc.first()
     geometry = ee.Geometry(feature.get("geom"))
