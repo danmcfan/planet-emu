@@ -1,5 +1,5 @@
 import colormap from "colormap";
-import type { ColorOption } from "../types";
+import type { ColorOption } from "../../types";
 
 export function getColorOptions(values: number[], nShades: number = 10): ColorOption[] {
     let min = Math.min(...values);
@@ -14,7 +14,6 @@ export function getColorOptions(values: number[], nShades: number = 10): ColorOp
         format: "hex",
         alpha: 1,
     });
-
 
     return colors.map(
         (color, index) => {

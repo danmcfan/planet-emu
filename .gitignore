@@ -156,6 +156,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Planet Emu
-*temp*
-service_account.json
+*/.temp
+*/.benchmarks
+
+*/main.py

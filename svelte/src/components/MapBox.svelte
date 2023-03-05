@@ -3,7 +3,7 @@
     import mapboxgl from "mapbox-gl";
 
     import { PUBLIC_MAPBOX_TOKEN } from "$env/static/public";
-    import { getFillColor } from "./color";
+    import { getFillColor } from "./legend/color";
     import type { ColorOption } from "../types";
 
     export let column: string;
@@ -23,7 +23,7 @@
             container: mapRef,
             style: "mapbox://styles/mapbox/streets-v11",
             center: [-120.0, 37.5],
-            zoom: 4.5,
+            zoom: 4,
             attributionControl: false,
         });
 
@@ -63,7 +63,7 @@
                 const popup = new mapboxgl.Popup()
                     .setLngLat(e.lngLat)
                     .setHTML(
-                        `<h3>${county_name}, ${state_name}</h3><p>${value}</p>`
+                        `<h3>${county_name}, ${state_name}</h3><p><b>${value}</b></p>`
                     )
                     .addTo(map);
             });
@@ -89,6 +89,8 @@
     });
 </script>
 
-<div class="h-4/6 w-auto">
+<div
+    class="h-[20rem] sm:h-[28rem] w-auto border-b-[0.1rem] border-black border-solid"
+>
     <div bind:this={mapRef} class="w-full h-full m-0 p-0" />
 </div>
