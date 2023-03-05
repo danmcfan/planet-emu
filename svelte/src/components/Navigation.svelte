@@ -9,16 +9,12 @@
            relative flex flex-row justify-between items-center
            bg-blue-600 border-b-[0.1rem] border-black border-solid"
 >
-    <div
-        class="group flex flex-row justify-center items-center mx-4 sm:mx-8 hover:cursor-pointer"
-    >
+    <div class="flex flex-row justify-center items-center mx-4 sm:mx-8 ">
         <iconify-icon
             icon="ri:earth-fill"
-            class="text-white group-hover:text-black text-[2rem] sm:text-[2.5rem]"
+            class="text-white  text-[2rem] sm:text-[2.5rem]"
         />
-        <div
-            class="text-white group-hover:text-black font-bold text-xl sm:text-2xl ml-4"
-        >
+        <div class="text-white font-bold text-xl sm:text-2xl ml-4">
             Planet Emu
         </div>
     </div>
