@@ -84,33 +84,25 @@
         depth
     );
 
-    $: values = countyData.features.map(
-        (feature) => feature.properties[column]
-    );
+    $: values = countyData.features.map((feature) => {
+        let properties: any = feature.properties;
+        return properties[column];
+    });
     $: colorOptions = getColorOptions(values);
 </script>
 
 <Legend {colorOptions} />
 <MapBox {column} {colorOptions} {countyData} />
 
-<Selection bind:selected={layer} choices={layerChoices} label="Layer" />
+<Selection bind:selected={layer} choices={layerChoices} />
 {#if layer.id === "soil"}
-    <Dropdown
-        bind:selected={soilAttribute}
-        choices={soilAttributeChoices}
-        label="Attribute"
-    />
-    <Slider bind:selected={depth} choices={depthChoices} label="Depth" />
+    <Dropdown bind:selected={soilAttribute} choices={soilAttributeChoices} />
+    <Slider bind:selected={depth} choices={depthChoices} />
 {:else if layer.id === "weather"}
     <Dropdown
         bind:selected={weatherAttribute}
         choices={weatherAttributeChoices}
-        label="Attribute"
     />
 {:else if layer.id === "ndvi"}
-    <Dropdown
-        bind:selected={ndviAttribute}
-        choices={ndviAttributeChoices}
-        label="Attribute"
-    />
+    <Dropdown bind:selected={ndviAttribute} choices={ndviAttributeChoices} />
 {/if}
