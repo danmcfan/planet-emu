@@ -3,7 +3,6 @@
 
     export let choices: Choice[];
     export let selected: Choice;
-    export let label: string;
 
     let value: string = "0";
 

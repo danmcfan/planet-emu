@@ -4,7 +4,6 @@
 
     export let choices: Choice[];
     export let selected: Choice;
-    export let label: string;
 
     function handleClick(event: Event) {
         const target = event.target as HTMLElement;
