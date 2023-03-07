@@ -1,16 +1,19 @@
-FROM public.ecr.aws/lambda/python:3.9
+FROM python:3.10
 
-RUN pip3 install --upgrade pip
+WORKDIR /code
 
-COPY setup.py  ./setup.py
-COPY planet_emu/ ./planet_emu/
-RUN pip3 install -e .
+COPY ./requirements.txt /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+COPY ./planet_emu/ /code/planet_emu/
 
 ARG DECRYPT_PASSWORD
 ENV DECRYPT_PASSWORD=${DECRYPT_PASSWORD}
 
-COPY service_account.json.gpg ./service_account.json.gpg
-COPY scripts/decrypt_secret.sh ./decrypt_secret.sh
-RUN bash decrypt_secret.sh
+COPY ./service_account.json.gpg /code/service_account.json.gpg
+COPY ./scripts/decrypt_secret.sh /code/decrypt_secret.sh
+RUN /bin/sh decrypt_secret.sh
 
-RUN cp /root/secrets/service_account.json ${LAMBDA_TASK_ROOT}/service_account.json
+RUN cp /root/secrets/service_account.json /code/service_account.json
+
+CMD ["uvicorn", "planet_emu.fast_api.main:app", "--host", "0.0.0.0", "--port", "80"]

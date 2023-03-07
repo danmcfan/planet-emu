@@ -2,7 +2,6 @@ from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from mangum import Mangum
 from pydantic import BaseModel
 
 from planet_emu.fast_api import util
@@ -22,8 +21,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "https://danmcfan.github.io",
+        "http://localhost",
+        "https://planet-emu.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -79,6 +78,3 @@ def get_results(job_id: str):
         "job_id": job_id,
         "data": data[0],
     }
-
-
-handler = Mangum(app)
