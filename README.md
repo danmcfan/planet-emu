@@ -1,8 +1,8 @@
 # planet-emu
 A fullstack project that gathers, displays, models, and predicts soil, weather, and spectral features by spatial boundaries.
 
-## GitHub Pages
-[Click here](https://danmcfan.github.io/planet-emu) for the GitHub Pages frontend web application.
+## Svelte Frontend
+[Click here](https://planet-emu.com) for the Svelte frontend web application.
 
 ## Python FastAPI
 [Click here](https://api.planet-emu.com/docs) for the Python FastAPI interactive documentation.
