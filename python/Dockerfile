@@ -1,5 +1,7 @@
 FROM python:3.10
 
+LABEL org.opencontainers.image.source=https://github.com/danmcfan/planet-emu
+
 WORKDIR /code
 
 COPY ./requirements.txt /code/requirements.txt
