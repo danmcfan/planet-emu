@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt"
+spec:
+  tls:
+    - hosts:
+        - planet-emu.com
+      secretName: letsencrypt
+  rules:
+    - host: planet-emu.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: static-svc
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+          - backend:
+              service:
+                name: api-svc
+                port:
+                  number: 80
+            path: /api
+            pathType: Prefix

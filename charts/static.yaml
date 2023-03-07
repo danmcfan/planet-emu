@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: static-svc
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: static
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: static
+spec:
+  selector:
+    matchLabels:
+      app: static
+  template:
+    metadata:
+      labels:
+        app: static
+    spec:
+      containers:
+        - name: static
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html
+              name: default
+              subPath: html
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+      volumes:
+        - name: default
+          persistentVolumeClaim:
+            claimName: default
