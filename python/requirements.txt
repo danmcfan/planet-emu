@@ -1,8 +1,8 @@
-earthengine-api
-eeconvert
-geopandas
-awswrangler
-fastapi
-pydantic
-uvicorn
-tensorflow
+earthengine-api==0.1.343
+eeconvert==0.1.22
+geopandas==0.12.2
+awswrangler==2.20.0
+fastapi==0.93.0
+pydantic==1.10.5
+uvicorn==0.20.0
+tensorflow==2.11.0
