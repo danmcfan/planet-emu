@@ -14,8 +14,17 @@ spec:
       containers:
         - name: api
           image: ghcr.io/danmcfan/planet-emu-fast-api:latest
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "uvicorn planet_emu.api.main:app --host 0.0.0.0 --port 80"
           ports:
             - containerPort: 80
+          env:
+            - name: CELERY_BROKER_URL
+              value: redis://redis-svc:6379/0
+            - name: CELERY_RESULT_BACKEND
+              value: redis://redis-svc:6379/0
           resources:
             limits:
               cpu: 100m
