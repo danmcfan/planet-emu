@@ -13,21 +13,15 @@ spec:
     spec:
       containers:
         - name: static
-          image: nginx:alpine
+          image: ghcr.io/danmcfan/planet-emu-svelte:latest
           ports:
             - containerPort: 80
-          volumeMounts:
-            - mountPath: /usr/share/nginx/html
-              name: default
-              subPath: html
           resources:
             limits:
               cpu: 100m
               memory: 128Mi
-      volumes:
-        - name: default
-          persistentVolumeClaim:
-            claimName: default
+      imagePullSecrets:
+        - name: ghcr
 ---
 apiVersion: v1
 kind: Service
