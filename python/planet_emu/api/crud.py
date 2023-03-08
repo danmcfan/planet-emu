@@ -1,19 +1,23 @@
+from typing import Hashable, Any
+
 from sqlalchemy.orm import Session
 
-from planet_emu.api import models, schemas
+from planet_emu.api import models
 
 
-def create_job(db: Session, id: str, point: schemas.Point) -> models.Job:
-    db_job = models.Job(id=id, x=point.x, y=point.y)
-    db.add(db_job)
+def create_result(
+    db: Session, id: str, x: float, y: float, year: int, properties: dict[Hashable, Any]
+) -> models.Result:
+    result = models.Result(id=id, x=x, y=y, year=year, properties=properties)
+    db.add(result)
     db.commit()
-    db.refresh(db_job)
-    return db_job
+    db.refresh(result)
+    return result
 
 
-def get_jobs(db: Session, skip: int = 0, limit: int = 100) -> list[models.Job]:
-    return db.query(models.Job).offset(skip).limit(limit).all()
+def get_results(db: Session, skip: int = 0, limit: int = 100) -> list[models.Result]:
+    return db.query(models.Result).offset(skip).limit(limit).all()
 
 
-def get_job(db: Session, id: str) -> models.Job:
-    return db.query(models.Job).filter(models.Job.id == id).first()
+def get_result(db: Session, id: str) -> models.Result:
+    return db.query(models.Result).filter(models.Result.id == id).first()
