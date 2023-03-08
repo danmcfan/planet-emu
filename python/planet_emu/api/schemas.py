@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 
 from pydantic import BaseModel
 
@@ -9,10 +9,10 @@ class Point(BaseModel):
 
 
 class Status(str, Enum):
-    PENDING = auto()
-    RUNNING = auto()
-    SUCCESS = auto()
-    FAILURE = auto()
+    PENDING = "pending"
+    RUNNING = "running"
+    SUCCESS = "success"
+    FAILURE = "failure"
 
 
 class Job(BaseModel):
