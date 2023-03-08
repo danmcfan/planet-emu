@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/danmcfan/planet-emu-fast-api:latest
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "celery worker --app=worker.celery --loglevel=info"
+          env:
+            - name: CELERY_BROKER_URL
+              value: redis://redis-svc:6379/0
+            - name: CELERY_RESULT_BACKEND
+              value: redis://redis-svc:6379/0
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+      imagePullSecrets:
+        - name: ghcr
