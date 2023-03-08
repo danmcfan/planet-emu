@@ -1,8 +1,8 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, JSON
-from geoalchemy2 import Geometry
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, Float, String, JSON, Enum
 from sqlalchemy.orm import relationship
 
 from planet_emu.api.database import Base
+from planet_emu.api.schemas import Status
 
 
 class User(Base):
@@ -30,7 +30,8 @@ class Item(Base):
 class Job(Base):
     __tablename__ = "jobs"
 
-    id = Column(String, primary_key=True, index=True)
-    point = Column(Geometry("POINT"), index=True)
-    status = Column(String, index=True)
-    result = Column(JSON, index=True)
+    id = Column(Integer, primary_key=True, index=True)
+    x = Column(Float, index=True)
+    y = Column(Float, index=True)
+    status = Column(Enum(Status), index=True)
+    result = Column(JSON, index=True, nullable=True)

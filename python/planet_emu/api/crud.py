@@ -37,7 +37,7 @@ def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
 
 
 def create_job(db: Session, id: str, point: schemas.Point):
-    db_job = models.Job(id=id, point=point, status="pending")
+    db_job = models.Job(id=id, x=point.x, y=point.y)
     db.add(db_job)
     db.commit()
     db.refresh(db_job)

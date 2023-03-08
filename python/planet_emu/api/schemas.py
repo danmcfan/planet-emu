@@ -1,3 +1,5 @@
+from enum import Enum
+
 from pydantic import BaseModel
 
 
@@ -40,10 +42,18 @@ class Point(BaseModel):
     y: float
 
 
+class Status(str, Enum):
+    PENDING = "pending"
+    RUNNING = "running"
+    SUCCESS = "success"
+    FAILURE = "failure"
+
+
 class Job(BaseModel):
     id: str
-    point: Point
-    status: str
+    x: float
+    y: float
+    status: Status = Status.PENDING
     result: dict[str, float] | None = None
 
     class Config:
