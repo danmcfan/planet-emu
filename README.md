@@ -1,18 +1,23 @@
-# planet-emu
-A fullstack project that gathers, displays, models, and predicts soil, weather, and spectral features by spatial boundaries.
+# Planet Emu
+An emulator of the planet Earth.
 
-## Svelte Frontend
-[Click here](https://planet-emu.com) for the Svelte frontend web application.
+[Click here to go to the Svelte web application page.](https://planet-emu.com)
 
-## Python FastAPI
-[Click here](https://api.planet-emu.com/docs) for the Python FastAPI interactive documentation.
+[Click here to go to the FastAPI interactive documentation page.](https://api.planet-emu.com)
+
 
 ## Features
-- Executes geospatial queries to Google Earth Engine using AWS Lambda Functions.
-    - Gathers soil, weather, and spectral properties for county boundaries within the contiguous United States.
-- Deploys a JavaScript React web application to GitHub Pages.
-    - Displays the geospatial data as layers within a MapBox component.
-- Creates a simple regression model using TensorFlow to predict the relationship between weather / soil and the normalized difference vegetation index (NDVI).
+- Uses the Google Earth Engine SDK for Python to gather enviornmental attributes from satellite imagery across the contiguous United States
+    - Soil (bulk density, water content, pH, clay, sand)
+    - Weather (percipitation, temperature, air pressure)
+    - Vegetation (normalized difference vegetation index)
+- Displays the spatial data in a MapBox web map with controls for selecting different enviornmental attributes
+- Accepts user input of coordinates and runs both a simple linear model and two layer deep nueral network model to predict the NDVI for the area immidately surrounding the given coordinates
 
-## Architecture
-![Architecture](docs/architecture.png)
+# Architecture
+
+This full stack application consists of the following:
+- REST API backend built using the FastAPI framework in Python
+- Web application built using the Svelte framework in Typescript
+- PostgreSQL relational database with PostGIS spatial extensions
+- Kubernetes cluster to run the application pods and route network traffic
