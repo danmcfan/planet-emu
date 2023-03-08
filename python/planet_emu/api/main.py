@@ -22,7 +22,6 @@ def get_db():
 app = FastAPI(
     title="Planet Emu",
     description="An emulator of the planet Earth",
-    version="1.0.0",
 )
 
 app.add_middleware(
