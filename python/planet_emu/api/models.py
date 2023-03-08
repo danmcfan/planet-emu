@@ -31,7 +31,7 @@ class Job(Base):
     __tablename__ = "jobs"
 
     id = Column(Integer, primary_key=True, index=True)
-    x = Column(Float, index=True)
-    y = Column(Float, index=True)
-    status = Column(Enum(Status), index=True)
-    result = Column(JSON, index=True, nullable=True)
+    x = Column(Float)
+    y = Column(Float)
+    status = Column(Enum(Status), default=Status.PENDING)
+    result = Column(JSON, nullable=True)
