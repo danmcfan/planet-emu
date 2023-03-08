@@ -37,8 +37,6 @@ class Task(Protocol):
 
 @celery.task(bind=True)
 def predict_point(self: Task, x: float, y: float, year: int = 2020):
-    from planet_emu.predict import load_model
-
     point = geometry.Point(x, y)
     circle = point.buffer(0.01, resolution=4)
 
@@ -79,14 +77,6 @@ def predict_point(self: Task, x: float, y: float, year: int = 2020):
         data.update(result_gdf.to_dict(orient="records")[0])
 
     df = pd.DataFrame(data, index=[0])
-
-    features = df.drop(columns=["ndvi"])
-
-    linear_model = load_model("planet_emu/model/linear")
-    df["linear_ndvi"] = linear_model.predict(features).flatten()
-
-    dnn_model = load_model("planet_emu/model/dnn")
-    df["dnn_ndvi"] = dnn_model.predict(features).flatten()
 
     data = df.to_dict(orient="records")[0]
 

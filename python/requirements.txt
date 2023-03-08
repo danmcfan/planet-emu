@@ -4,9 +4,10 @@ eeconvert==0.1.22
 fastapi==0.93.0
 GeoAlchemy2==0.13.1
 geopandas==0.12.2
-psycopg2==2.9.5
+psycopg2-binary==2.9.5
 pydantic==1.10.5
 redis==4.5.1
 sqlalchemy==2.0.5.post1
-tensorflow==2.11.0
 uvicorn==0.20.0
+
+# tensorflow==2.11.0
