@@ -17,7 +17,7 @@ PROJECT = os.getenv("GCP_PROJECT")
 gee.init(NAME, PROJECT, "service_account.json")
 
 from planet_emu import image, predict
-from planet_emu.fast_api import util
+from planet_emu.api import util
 
 
 def handler(event: dict, context: Any) -> dict:
