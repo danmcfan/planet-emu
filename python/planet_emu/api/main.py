@@ -8,7 +8,8 @@ from sqlalchemy.orm import Session
 
 from planet_emu.api import crud, models, schemas
 from planet_emu.api.database import SessionLocal, engine
-from planet_emu.celery.worker import celery, sleep
+from planet_emu.celery import celery
+from planet_emu.celery.tasks import predict_point
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -40,38 +41,18 @@ def index():
     return "https://api.planet-emu.com/docs"
 
 
-@app.post("/jobs/", response_model=schemas.Job)
-def create_job(point: schemas.Point, db: Session = Depends(get_db)):
+@app.post("/tasks/", response_model=schemas.Task)
+def create_job(point: schemas.Point, year: int = 2020):
     if not (-124.763068 <= point.x <= -66.949895):
         raise HTTPException(400, "X coordinate is out of range")
     if not (24.523096 <= point.y <= 49.384358):
         raise HTTPException(400, "Y coordinate is out of range")
+    if not (2000 <= year <= 2020):
+        raise HTTPException(400, "Year is out of range")
 
-    job_id = uuid4().hex[:8]
-
-    return crud.create_job(db, job_id, point)
-
-
-@app.get("/jobs/", response_model=list[schemas.Job])
-def read_jobs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_jobs(db, skip=skip, limit=limit)
-
-
-@app.get("/jobs/{job_id}", response_model=schemas.Job)
-def read_job(job_id: str, db: Session = Depends(get_db)):
-    job = crud.get_job(db, job_id)
-
-    if not job:
-        raise HTTPException(400, "Job not found")
-
-    return job
-
-
-@app.post("/tasks/", response_model=schemas.Task)
-def create_task(seconds: int = 1):
-    return sleep.delay(seconds)
+    return predict_point(point.x, point.y, year)
 
 
 @app.get("/tasks/{task_id}", response_model=schemas.Task)
-def read_task(task_id: str):
+def read_job(task_id: str):
     return AsyncResult(task_id, app=celery)
