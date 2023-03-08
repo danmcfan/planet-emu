@@ -14,7 +14,7 @@ An emulator of the planet Earth.
 - Displays the spatial data in a MapBox web map with controls for selecting different enviornmental attributes
 - Accepts user input of coordinates and runs both a simple linear model and two layer deep nueral network model to predict the NDVI for the area immidately surrounding the given coordinates
 
-# Architecture
+## Architecture
 
 This full stack application consists of the following:
 - REST API backend built using the FastAPI framework in Python
