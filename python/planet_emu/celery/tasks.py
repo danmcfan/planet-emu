@@ -1,5 +1,5 @@
 import warnings
-from typing import Any, Hashable
+from typing import Protocol
 
 warnings.simplefilter("ignore", FutureWarning)
 
@@ -9,9 +9,10 @@ import geopandas as gpd
 import pandas as pd
 from shapely import geometry
 
+from planet_emu.api.crud import create_result
+from planet_emu.api.database import SessionLocal
 from planet_emu.celery import celery
 from planet_emu.gee import init
-from planet_emu.predict import load_model
 
 NAME = os.getenv("GCP_SERVICE_NAME")
 PROJECT = os.getenv("GCP_PROJECT")
@@ -21,13 +22,23 @@ if NAME is None:
 if PROJECT is None:
     raise ValueError("GCP_PROJECT is not set")
 
-init(NAME, PROJECT, "service_account.json")
+init(NAME, PROJECT)
 
 from planet_emu import image
 
 
-@celery.task
-def predict_point(x: float, y: float, year: int = 2020) -> dict[Hashable, Any]:
+class Request(Protocol):
+    id: str
+
+
+class Task(Protocol):
+    request: Request
+
+
+@celery.task(bind=True)
+def predict_point(self: Task, x: float, y: float, year: int = 2020):
+    from planet_emu.predict import load_model
+
     point = geometry.Point(x, y)
     circle = point.buffer(0.01, resolution=4)
 
@@ -71,15 +82,17 @@ def predict_point(x: float, y: float, year: int = 2020) -> dict[Hashable, Any]:
 
     features = df.drop(columns=["ndvi"])
 
-    linear_model = load_model(f"model/linear")
+    linear_model = load_model("planet_emu/model/linear")
     df["linear_ndvi"] = linear_model.predict(features).flatten()
 
-    dnn_model = load_model(f"/model/dnn")
+    dnn_model = load_model("planet_emu/model/dnn")
     df["dnn_ndvi"] = dnn_model.predict(features).flatten()
 
     data = df.to_dict(orient="records")[0]
 
-    data["x"] = x
-    data["y"] = y
+    db = SessionLocal()
 
-    return data
+    try:
+        create_result(db=db, id=self.request.id, x=x, y=y, year=year, properties=data)
+    finally:
+        db.close()
