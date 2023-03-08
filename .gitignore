@@ -159,4 +159,5 @@ yarn-error.log*
 */.temp
 */.benchmarks
 
+/charts/database-config.yaml
 */main.py
