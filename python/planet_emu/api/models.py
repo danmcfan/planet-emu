@@ -1,4 +1,4 @@
-from sqlalchemy import JSON, Column, Float, String, Integer
+from sqlalchemy import JSON, Column, Float, Integer, String
 
 from planet_emu.api.database import Base
 

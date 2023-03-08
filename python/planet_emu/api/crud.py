@@ -1,4 +1,4 @@
-from typing import Hashable, Any
+from typing import Any, Hashable
 
 from sqlalchemy.orm import Session
 
