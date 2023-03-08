@@ -1,8 +1,10 @@
+awswrangler==2.20.0
 earthengine-api==0.1.343
 eeconvert==0.1.22
-geopandas==0.12.2
-awswrangler==2.20.0
 fastapi==0.93.0
+geopandas==0.12.2
+psycopg2==2.9.5
 pydantic==1.10.5
-uvicorn==0.20.0
+sqlalchemy==2.0.5.post1
 tensorflow==2.11.0
+uvicorn==0.20.0
