@@ -1,7 +1,7 @@
 <script lang="ts">
     import Icon from "@iconify/svelte";
 
-    const apiLink = "https://api.planetemu.com/docs";
+    const apiLink = "https://api.planet-emu.com/docs";
     const githubLink = "https://github.com/danmcfan/planet-emu";
 </script>
 
