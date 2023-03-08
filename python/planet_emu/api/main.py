@@ -41,7 +41,7 @@ def index():
     return "https://api.planet-emu.com/docs"
 
 
-@app.post("/tasks/", response_model=schemas.Task)
+@app.post("/tasks/", response_model=schemas.Task, status_code=201)
 def create_task(x: float, y: float, year: int = 2020):
     if not (-124.763068 <= x <= -66.949895):
         raise HTTPException(400, "X coordinate is out of range")
@@ -71,3 +71,14 @@ def read_result(task_id: str, db: Session = Depends(get_db)):
         raise HTTPException(404, "Result not found")
 
     return result
+
+
+@app.delete("/result/{task_id}", status_code=204)
+def delete_result(task_id: str, db: Session = Depends(get_db)):
+    result = crud.get_result(db, task_id)
+
+    if result is None:
+        raise HTTPException(404, "Result not found")
+
+    db.delete(result)
+    db.commit()
