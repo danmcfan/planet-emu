@@ -11,5 +11,3 @@ celery = Celery(
     broker=broker,
     include=["planet_emu.celery.tasks"],
 )
-
-print(__name__)
