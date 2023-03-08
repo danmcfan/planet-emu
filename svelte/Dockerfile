@@ -11,7 +11,7 @@ COPY ./ /code
 
 RUN npm run build
 
-FROM nginx:1.19-alpine
+FROM nginx:alpine
 
 LABEL org.opencontainers.image.source=https://github.com/danmcfan/planet-emu
 
