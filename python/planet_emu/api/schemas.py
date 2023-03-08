@@ -1,11 +1,6 @@
 from pydantic import BaseModel
 
 
-class Point(BaseModel):
-    x: float
-    y: float
-
-
 class ItemBase(BaseModel):
     title: str
     description: str | None = None
@@ -35,6 +30,21 @@ class User(UserBase):
     id: int
     is_active: bool
     items: list[Item] = []
+
+    class Config:
+        orm_mode = True
+
+
+class Point(BaseModel):
+    x: float
+    y: float
+
+
+class Job(BaseModel):
+    id: str
+    point: Point
+    status: str
+    result: dict[str, float] | None = None
 
     class Config:
         orm_mode = True

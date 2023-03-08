@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from sqlalchemy.orm import Session
 
-from planet_emu.api import crud, models, schemas, util
+from planet_emu.api import crud, models, schemas
 from planet_emu.api.database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
@@ -42,47 +42,26 @@ def index():
     }
 
 
-@app.post("/submit/")
-def submit_job(point: schemas.Point):
+@app.post("/jobs/")
+def create_job(point: schemas.Point, db: Session = Depends(get_db)) -> schemas.Job:
     if not (-124.763068 <= point.x <= -66.949895):
-        return {"point": point, "error": "X coordinate is out of range"}
+        raise HTTPException(400, "X coordinate is out of range")
     if not (24.523096 <= point.y <= 49.384358):
-        return {"point": point, "error": "Y coordinate is out of range"}
+        raise HTTPException(400, "Y coordinate is out of range")
 
     job_id = uuid4().hex[:8]
 
-    data = util.invoke_job(point.x, point.y, job_id)
-
-    return data
+    return crud.create_job(db, job_id, point)
 
 
-@app.get("/status/{job_id}")
-def get_status(job_id: str):
-    data = util.get_json(job_id)
+@app.get("/jobs/{job_id}")
+def get_status(job_id: str, db: Session = Depends(get_db)):
+    job = crud.get_job(db, job_id)
 
-    if not data:
+    if not job:
         raise HTTPException(400, "Job not found")
 
-    return {
-        "job_id": job_id,
-        "status": data[0]["status"],
-    }
-
-
-@app.get("/results/{job_id}")
-def get_results(job_id: str):
-    data = util.get_json(job_id)
-
-    if not data:
-        raise HTTPException(400, "Job not found")
-
-    if data[0]["status"] == "pending":
-        raise HTTPException(400, "Job is still pending")
-
-    return {
-        "job_id": job_id,
-        "data": data[0],
-    }
+    return job
 
 
 @app.post("/users/", response_model=schemas.User)

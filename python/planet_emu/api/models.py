@@ -1,4 +1,5 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, JSON
+from geoalchemy2 import Geometry
 from sqlalchemy.orm import relationship
 
 from planet_emu.api.database import Base
@@ -24,3 +25,12 @@ class Item(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="items")
+
+
+class Job(Base):
+    __tablename__ = "jobs"
+
+    id = Column(String, primary_key=True, index=True)
+    point = Column(Geometry("POINT"), index=True)
+    status = Column(String, index=True)
+    result = Column(JSON, index=True)
