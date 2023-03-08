@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: static
 spec:
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: static

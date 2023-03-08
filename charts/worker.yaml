@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: worker
 spec:
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: worker
@@ -17,7 +18,7 @@ spec:
           command:
             - "/bin/sh"
             - "-c"
-            - "celery worker --app=worker.celery --loglevel=info"
+            - "celery -A planet_emu.celery worker --loglevel=info"
           env:
             - name: CELERY_BROKER_URL
               value: redis://redis-svc:6379/0
