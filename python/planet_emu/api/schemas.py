@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -21,6 +22,15 @@ class Job(BaseModel):
     y: float
     status: Status = Status.PENDING
     result: dict[str, float] | None = None
+
+    class Config:
+        orm_mode = True
+
+
+class Task(BaseModel):
+    id: str
+    status: str
+    result: Any
 
     class Config:
         orm_mode = True
