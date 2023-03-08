@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -21,8 +22,8 @@ def get_db():
 
 
 app = FastAPI(
-    title="planet-emu-api",
-    description="Planet Emulator API",
+    title="Planet Emu",
+    description="An emulator of the planet Earth",
     version="1.0.0",
 )
 
@@ -35,11 +36,9 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/", response_class=RedirectResponse, status_code=302)
 def index():
-    return {
-        "message": "Go to https://api.planet-emu.com/docs for complete API documentation."
-    }
+    return "https://api.planet-emu.com/docs"
 
 
 @app.post("/jobs/")
