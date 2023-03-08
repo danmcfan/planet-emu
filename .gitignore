@@ -160,4 +160,4 @@ yarn-error.log*
 */.benchmarks
 
 /charts/database-config.yaml
-*/main.py
+*/temp.py
