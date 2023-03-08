@@ -42,17 +42,32 @@ def index():
 
 
 @app.post("/tasks/", response_model=schemas.Task)
-def create_job(point: schemas.Point, year: int = 2020):
-    if not (-124.763068 <= point.x <= -66.949895):
+def create_task(x: float, y: float, year: int = 2020):
+    if not (-124.763068 <= x <= -66.949895):
         raise HTTPException(400, "X coordinate is out of range")
-    if not (24.523096 <= point.y <= 49.384358):
+    if not (24.523096 <= y <= 49.384358):
         raise HTTPException(400, "Y coordinate is out of range")
     if not (2000 <= year <= 2020):
         raise HTTPException(400, "Year is out of range")
 
-    return predict_point(point.x, point.y, year)
+    return predict_point.delay(x, y, year)
 
 
 @app.get("/tasks/{task_id}", response_model=schemas.Task)
-def read_job(task_id: str):
+def read_task(task_id: str):
     return AsyncResult(task_id, app=celery)
+
+
+@app.get("/results", response_model=list[schemas.Result])
+def read_results(db: Session = Depends(get_db)):
+    return crud.get_results(db)
+
+
+@app.get("/result/{task_id}", response_model=schemas.Result)
+def read_result(task_id: str, db: Session = Depends(get_db)):
+    result = crud.get_result(db, task_id)
+
+    if result is None:
+        raise HTTPException(404, "Result not found")
+
+    return result
