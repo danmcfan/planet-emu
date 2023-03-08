@@ -15,6 +15,7 @@ spec:
       containers:
         - name: worker
           image: ghcr.io/danmcfan/planet-emu-fast-api:latest
+          imagePullPolicy: Always
           command:
             - "/bin/sh"
             - "-c"
