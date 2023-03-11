@@ -63,7 +63,7 @@ def read_results(db: Session = Depends(get_db)):
     return crud.get_results(db)
 
 
-@app.get("/result/{task_id}", response_model=schemas.Result)
+@app.get("/results/{task_id}", response_model=schemas.Result)
 def read_result(task_id: str, db: Session = Depends(get_db)):
     result = crud.get_result(db, task_id)
 
@@ -73,7 +73,7 @@ def read_result(task_id: str, db: Session = Depends(get_db)):
     return result
 
 
-@app.delete("/result/{task_id}", status_code=204)
+@app.delete("/results/{task_id}", status_code=204)
 def delete_result(task_id: str, db: Session = Depends(get_db)):
     result = crud.get_result(db, task_id)
 
@@ -82,3 +82,18 @@ def delete_result(task_id: str, db: Session = Depends(get_db)):
 
     db.delete(result)
     db.commit()
+
+
+@app.get("/states", response_model=list[str])
+def read_state_names(db: Session = Depends(get_db)):
+    return crud.get_state_names(db)
+
+
+@app.get("/counties", response_model=list[str])
+def read_county_names(state_name: str, db: Session = Depends(get_db)):
+    return crud.get_county_names(db, state_name)
+
+
+@app.get("/counties/geojson")
+def read_counties_geojson(state_name: str, db: Session = Depends(get_db)):
+    return crud.get_counties(db, state_name)
