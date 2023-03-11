@@ -96,4 +96,4 @@ def read_county_names(state_name: str, db: Session = Depends(get_db)):
 
 @app.get("/counties/geojson")
 def read_counties_geojson(state_name: str, db: Session = Depends(get_db)):
-    return crud.get_counties(db, state_name)
+    return crud.get_counties_by_state_name(db, state_name)
