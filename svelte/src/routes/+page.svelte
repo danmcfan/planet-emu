@@ -1,5 +1,5 @@
 <script lang="ts">
-    import MapBox from "../components/MapBox.svelte";
+    import MapBox from "$lib/MapBox.svelte";
     import Selection from "../components/Selection.svelte";
     import Dropdown from "../components/Dropdown.svelte";
     import Slider from "../components/Slider.svelte";
