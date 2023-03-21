@@ -1,13 +1,18 @@
 <script lang="ts">
-    import MapBox from "$lib/MapBox.svelte";
+    import type { PageData } from "./$types";
+
+    import Map from "$lib/Map.svelte";
+    import Controls from "$lib/Controls.svelte";
+    import GeometryCollection from "$lib/GeometryCollection.svelte";
+    import Popup from "$lib/Popup.svelte";
+
     import Selection from "../components/Selection.svelte";
     import Dropdown from "../components/Dropdown.svelte";
     import Slider from "../components/Slider.svelte";
     import Legend from "../components/legend/Legend.svelte";
 
-    import { getColorOptions } from "../components/legend/color";
+    import { getColorOptions, getFillColor } from "../components/legend/color";
     import type { Choice } from "../types";
-    import countyData from "$lib/data/california.json";
 
     const layerChoices: Choice[] = [
         { id: "soil", value: "Soil", icon: "mdi:shovel" },
@@ -53,6 +58,8 @@
         { id: "200", value: "200 cm" },
     ];
 
+    export let data: PageData;
+
     let layer: Choice = layerChoices[0];
     let soilAttribute: Choice = soilAttributeChoices[0];
     let weatherAttribute: Choice = weatherAttributeChoices[0];
@@ -84,25 +91,53 @@
         depth
     );
 
-    $: values = countyData.features.map((feature) => {
+    $: values = data.counties.features.map((feature) => {
         let properties: any = feature.properties;
         return properties[column];
     });
     $: colorOptions = getColorOptions(values);
+    $: fillColor = getFillColor(column, colorOptions);
+
+    const getHTML = (e: any) => {
+        let { properties } = e.features[0];
+        let { county_name, state_name } = properties;
+        let value = Math.round(properties[column] * 100) / 100;
+
+        return `<h3>${county_name}, ${state_name}</h3><p><b>${value}</b></p>`;
+    };
 </script>
 
 <Legend {colorOptions} />
-<MapBox {column} {colorOptions} {countyData} />
 
-<Selection bind:selected={layer} choices={layerChoices} />
-{#if layer.id === "soil"}
-    <Dropdown bind:selected={soilAttribute} choices={soilAttributeChoices} />
-    <Slider bind:selected={depth} choices={depthChoices} />
-{:else if layer.id === "weather"}
-    <Dropdown
-        bind:selected={weatherAttribute}
-        choices={weatherAttributeChoices}
+<Map lng={-120.0} lat={37.5} zoom={4}>
+    <Controls />
+    <GeometryCollection
+        source={data.counties}
+        sourceName="countiesSource"
+        layerName="countiesLayer"
+        bind:fillColor
+        fillOpacity={0.75}
     />
-{:else if layer.id === "ndvi"}
-    <Dropdown bind:selected={ndviAttribute} choices={ndviAttributeChoices} />
-{/if}
+    <Popup layerName="countiesLayer" {getHTML} />
+</Map>
+
+<div class="w-auto border-t-[0.1rem] border-black border-solid">
+    <Selection bind:selected={layer} choices={layerChoices} />
+    {#if layer.id === "soil"}
+        <Dropdown
+            bind:selected={soilAttribute}
+            choices={soilAttributeChoices}
+        />
+        <Slider bind:selected={depth} choices={depthChoices} />
+    {:else if layer.id === "weather"}
+        <Dropdown
+            bind:selected={weatherAttribute}
+            choices={weatherAttributeChoices}
+        />
+    {:else if layer.id === "ndvi"}
+        <Dropdown
+            bind:selected={ndviAttribute}
+            choices={ndviAttributeChoices}
+        />
+    {/if}
+</div>

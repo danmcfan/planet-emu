@@ -7,7 +7,7 @@
 	<title>Planet Emu</title>
 </head>
 
-<div class="h-screen w-screen flex flex-col">
+<div class="h-full w-full flex flex-col">
 	<Navigation />
 	<slot />
 </div>

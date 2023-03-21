@@ -35,10 +35,12 @@
     />
 </svelte:head>
 
-<div bind:this={container} class="w-full h-full">
+<div bind:this={container} class="w-full h-[22rem] sm:h-[26rem]">
     {#if map}
         <slot />
     {:else}
-        <div class="text-center text-4xl mt-8">Loading map...</div>
+        <div class="w-full h-full flex justify-center items-center bg-blue-200">
+            <p class="text-center text-6xl sm:text-8xl">Loading map...</p>
+        </div>
     {/if}
 </div>

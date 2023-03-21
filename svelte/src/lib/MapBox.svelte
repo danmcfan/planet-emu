@@ -16,8 +16,6 @@
     $: fillColor = getFillColor(column, colorOptions);
 
     onMount(async () => {
-        mapbox.accessToken = PUBLIC_MAPBOX_TOKEN;
-
         map = new mapbox.Map({
             container: mapRef,
             style: "mapbox://styles/mapbox/streets-v11",
