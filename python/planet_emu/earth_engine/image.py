@@ -1,3 +1,7 @@
+import warnings
+
+warnings.simplefilter("ignore", FutureWarning)
+
 import ee
 import eeconvert
 import geopandas as gpd
