@@ -1,12 +1,9 @@
 import colormap from "colormap";
 import type { ColorOption } from "../../types";
 
-export function getColorOptions(values: number[], nShades: number = 10): ColorOption[] {
-    let min = Math.min(...values);
-    let max = Math.max(...values);
-
+export function getColorOptions(min: number, max: number, nShades: number = 20): ColorOption[] {
     let range = max - min;
-    let step = range / nShades;
+    let step = range / (nShades - 1);
 
     let colors: string[] = colormap({
         colormap: "winter",
@@ -23,7 +20,7 @@ export function getColorOptions(values: number[], nShades: number = 10): ColorOp
     );
 }
 
-export function getFillColor(column: string, colorOptions: ColorOption[], opacity: number = 0.8): any[] {
+export function getFillColor(column: string, colorOptions: ColorOption[]): any[] {
     return [
         "interpolate",
         ["linear"],
