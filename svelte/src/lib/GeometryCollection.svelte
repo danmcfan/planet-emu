@@ -5,45 +5,37 @@
     const { getMap } = getContext(key);
     const map = getMap();
 
-    export let source: any;
+    export let sourceUrl: string;
+    export let sourceLayer: string;
+
     export let sourceName: string;
     export let layerName: string;
 
     export let fillColor: string | any = "white";
-    export let fillOpacity = 0.25;
+    export let fillOpacity = 0.75;
 
-    export let lineColor = "black";
-    export let lineWidth = 0.25;
+    export let minZoom = 0;
+    export let maxZoom = 24;
 
     map.on("load", () => {
         map.addSource(sourceName, {
-            type: "geojson",
-            data: source,
+            type: "vector",
+            url: sourceUrl,
         });
 
         map.addLayer({
             id: layerName,
             type: "fill",
             source: sourceName,
+            "source-layer": sourceLayer,
             layout: {},
             paint: {
                 "fill-color": fillColor,
                 "fill-opacity": fillOpacity,
             },
+            minzoom: minZoom,
+            maxzoom: maxZoom,
         });
-
-        if (lineColor && lineWidth) {
-            map.addLayer({
-                id: `${layerName}-outline`,
-                type: "line",
-                source: sourceName,
-                layout: {},
-                paint: {
-                    "line-color": lineColor,
-                    "line-width": lineWidth,
-                },
-            });
-        }
     });
 
     $: if (map.getLayer(layerName))
