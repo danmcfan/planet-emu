@@ -2,6 +2,7 @@
     import type { ColorOption } from "../../types";
 
     export let colorOptions: ColorOption[];
+    export let fillOpacity: number;
 
     $: minValue = Math.min(...colorOptions.map((option) => option.value));
     $: maxValue = Math.max(...colorOptions.map((option) => option.value));
@@ -16,10 +17,10 @@
     <div class="flex flex-row justify-center">
         {#each colorOptions as colorOption (colorOption.color)}
             <div
-                class="w-[1.25rem] sm:w-8 h-4 sm:h-6 border-black border-solid border-[0.1rem] border-l-0 first:border-l-2"
+                class="w-[0.5rem] sm:w-[1rem] h-4 sm:h-6 border-black border-solid border-[0.1rem] border-l-0 first:border-l-[0.1rem]"
             >
                 <div
-                    style="background-color: {colorOption.color}; opacity: 0.75;"
+                    style="background-color: {colorOption.color}; opacity: {fillOpacity};"
                     class="w-full h-full"
                 />
             </div>
