@@ -4,7 +4,6 @@ warnings.simplefilter("ignore", FutureWarning)
 
 import geopandas as gpd
 import pandas as pd
-
 from planet_emu import util
 
 LAYER_NAMES = [

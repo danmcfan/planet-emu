@@ -2,9 +2,8 @@ import json
 from typing import Any, Hashable
 
 import geopandas as gpd
-from sqlalchemy.orm import Session
-
 from planet_emu.api import models
+from sqlalchemy.orm import Session
 
 
 def create_result(
@@ -54,3 +53,39 @@ def get_counties_by_state_name(db: Session, state_name: str) -> dict[Hashable, A
         crs="EPSG:4326",
     )
     return json.loads(gdf.to_json())
+
+
+def get_grid(db: Session, size: int, limit: int, offset: int) -> dict[Hashable, Any]:
+    columns = ["index"]
+
+    for soil_property in [
+        "bulk_density",
+        "clay",
+        "organic_carbon",
+        "ph",
+        "sand",
+        "water_content",
+    ]:
+        for depth in [0, 10, 30, 60, 100, 200]:
+            columns.append(f"{soil_property}_{depth}")
+
+    columns.extend(["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp", "ndvi"])
+
+    columns = ",".join(columns)
+
+    query = f"""
+    SELECT json_build_object(
+        'type', 'FeatureCollection',
+        'features', json_agg(ST_AsGeoJSON(t.*)::json)
+    )
+    FROM (
+        SELECT {columns}, ST_Transform(geometry, 4326) AS geom
+        FROM grid_{size}
+        LIMIT {limit} OFFSET {offset}
+    ) AS t;
+    """
+
+    result = db.execute(query)
+    geojson = result.fetchone()[0]
+
+    return geojson

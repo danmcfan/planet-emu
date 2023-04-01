@@ -4,12 +4,11 @@ from celery.result import AsyncResult
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
-from sqlalchemy.orm import Session
-
 from planet_emu.api import crud, models, schemas
 from planet_emu.api.database import SessionLocal, engine
 from planet_emu.celery import celery
 from planet_emu.celery.tasks import predict_point
+from sqlalchemy.orm import Session
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -29,7 +28,11 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost",
+        "http://localhost:5173",
+        "https://planet-emu.com",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,
@@ -84,16 +87,11 @@ def delete_result(task_id: str, db: Session = Depends(get_db)):
     db.commit()
 
 
-@app.get("/states", response_model=list[str])
-def read_state_names(db: Session = Depends(get_db)):
-    return crud.get_state_names(db)
-
-
-@app.get("/counties", response_model=list[str])
-def read_county_names(state_name: str, db: Session = Depends(get_db)):
-    return crud.get_county_names(db, state_name)
-
-
-@app.get("/counties/geojson")
-def read_counties_geojson(state_name: str, db: Session = Depends(get_db)):
-    return crud.get_counties_by_state_name(db, state_name)
+@app.get("/grid")
+def read_grid(
+    size: int = 50_000,
+    limit: int = 100,
+    offset: int = 0,
+    db: Session = Depends(get_db),
+):
+    return crud.get_grid(db, size, limit, offset)

@@ -1,11 +1,13 @@
 import datetime as dt
-import ee
 
+import ee
 from planet_emu.earth_engine.enum import ImageCollectionEnum
 
 
-def add_ndvi_band(image: ee.Image) -> ee.Image:
-    return image.normalizedDifference(["sur_refl_b02", "sur_refl_b01"]).rename("ndvi")
+def add_ndvi_band(
+    image: ee.Image, ndvi_band: str = "sur_refl_b02", red_band: str = "sur_refl_b01"
+) -> ee.Image:
+    return image.normalizedDifference([ndvi_band, red_band]).rename("ndvi")
 
 
 def create_image_collection(enum: ImageCollectionEnum) -> ee.ImageCollection:

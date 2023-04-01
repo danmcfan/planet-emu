@@ -6,7 +6,6 @@ import os
 import time
 
 import geopandas as gpd
-
 from planet_emu import gee, image, util
 
 

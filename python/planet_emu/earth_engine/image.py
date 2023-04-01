@@ -5,7 +5,6 @@ warnings.simplefilter("ignore", FutureWarning)
 import ee
 import eeconvert
 import geopandas as gpd
-
 from planet_emu.earth_engine.enum import ImageEnum
 
 

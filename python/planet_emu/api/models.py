@@ -1,6 +1,5 @@
-from sqlalchemy import JSON, Column, Float, Integer, String
-
 from planet_emu.api.database import Base
+from sqlalchemy import JSON, Column, Float, Integer, String
 
 
 class Result(Base):

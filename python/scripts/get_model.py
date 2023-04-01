@@ -3,7 +3,6 @@ import os
 import click
 import numpy as np
 import pandas as pd
-
 from planet_emu import predict, util
 
 

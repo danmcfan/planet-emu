@@ -4,12 +4,11 @@ from typing import Protocol
 warnings.simplefilter("ignore", FutureWarning)
 
 import geopandas as gpd
-from shapely import geometry
-
 from planet_emu.api.crud import create_result
 from planet_emu.api.database import SessionLocal
 from planet_emu.celery import celery
-from planet_emu.earth_engine import image, collection, enum
+from planet_emu.earth_engine import collection, enum, image
+from shapely import geometry
 
 
 class Request(Protocol):
