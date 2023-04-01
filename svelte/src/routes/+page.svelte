@@ -172,9 +172,20 @@
         bind:fillColor
         {fillOpacity}
         minZoom={8}
-        maxZoom={24}
+        maxZoom={9}
     />
     <Popup layerName="gridLayer_5000" {getHTML} />
+    <GeometryCollection
+        sourceUrl="mapbox://danny-darko.dd0wxoom"
+        sourceLayer="california_2500-9c20ty"
+        sourceName="gridSource_2500"
+        layerName="gridLayer_2500"
+        bind:fillColor
+        {fillOpacity}
+        minZoom={9}
+        maxZoom={24}
+    />
+    <Popup layerName="gridLayer_2500" {getHTML} />
 </Map>
 
 <div class="w-auto border-t-[0.1rem] border-black border-solid">

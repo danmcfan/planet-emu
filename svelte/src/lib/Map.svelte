@@ -35,7 +35,10 @@
     />
 </svelte:head>
 
-<div bind:this={container} class="w-full h-[20rem] sm:h-[28rem]">
+<div
+    bind:this={container}
+    class="w-full h-[20rem] sm:h-[28rem] md:h-[36rem] lg:h-[44rem]"
+>
     {#if map}
         <slot />
     {:else}
