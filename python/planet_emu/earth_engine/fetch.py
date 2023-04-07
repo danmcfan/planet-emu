@@ -22,6 +22,9 @@ def fetch_weather(grid_gdf: gpd.GeoDataFrame, scale: int) -> gpd.GeoDataFrame:
     image_collection = collection.create_image_collection(
         enum.ImageCollectionEnum.WEATHER
     )
+    image_collection = collection.filter_by_date(
+        image_collection, "2000-01-01", "2017-12-31"
+    )
     image_obj = collection.reduce_collection(image_collection)
 
     weather_gdf = sample_regions(image_obj, grid_gdf, scale)
@@ -45,6 +48,9 @@ def fetch_weather(grid_gdf: gpd.GeoDataFrame, scale: int) -> gpd.GeoDataFrame:
 def fetch_ndvi(grid_gdf: gpd.GeoDataFrame, scale: int) -> gpd.GeoDataFrame:
     image_collection = collection.create_image_collection(
         enum.ImageCollectionEnum.SPECTRAL
+    )
+    image_collection = collection.filter_by_date(
+        image_collection, "2000-01-01", "2017-12-31"
     )
     image_obj = collection.reduce_collection(image_collection)
     image_obj = collection.add_ndvi_band(
