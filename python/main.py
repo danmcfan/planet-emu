@@ -17,7 +17,7 @@ app = typer.Typer()
 @app.command()
 def ingest(
     state_name: str = "california",
-    scale: int = 10_000,
+    scale: int = 1000,
     output_folder: str | None = None,
 ):
     if output_folder is None:
@@ -45,7 +45,7 @@ def ingest(
 @app.command()
 def combine(
     state_name: str = "california",
-    scale: int = 10_000,
+    scale: int = 1000,
     output_folder: str | None = None,
 ):
     if output_folder is None:
@@ -92,12 +92,12 @@ def combine(
 @app.command()
 def train(
     state_name: str = "california",
-    scale: int = 10_000,
+    scale: int = 1000,
     output_folder: str | None = None,
-    epochs: int = 10,
-    batch_size: int = 1000,
+    epochs: int = 100,
+    batch_size: int = 10_000,
     verbose: int = 2,
-    retry: bool = False,
+    create: bool = False,
 ):
     if output_folder is None:
         output_folder = get_output_folder(state_name, scale)
@@ -106,10 +106,10 @@ def train(
 
     x_train, y_train, x_test, y_test = load_data(input_filepath)
 
-    if retry:
-        model = tf.keras.models.load_model(os.path.join(output_folder, "model"))
-    else:
+    if create:
         model = create_sequential_model(input_size=x_train.shape[1])
+    else:
+        model = tf.keras.models.load_model(os.path.join(output_folder, "model"))
 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
@@ -132,9 +132,7 @@ def train(
 def get_output_folder(state_name: str, scale: int) -> str:
     parent_folder = os.path.dirname(os.path.dirname(__file__))
 
-    output_folder = os.path.join(
-        parent_folder, f"data/csv/{state_name.lower()}_{scale}"
-    )
+    output_folder = os.path.join(parent_folder, f"data/{state_name.lower()}_{scale}")
     os.makedirs(output_folder, exist_ok=True)
     return output_folder
 
