@@ -160,4 +160,4 @@ yarn-error.log*
 
 /charts/database-config.yaml
 */temp.py
-data/output/
+data/
