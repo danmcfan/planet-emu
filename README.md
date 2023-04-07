@@ -32,7 +32,7 @@
 - The 1k resolution grid dataset is used to train the neural network
 - The soil and weather properties are used as input parameters and the NDVI property is used as the ouptut parameter
 - The neural network has three layers with 1024, 512, and 256 nodes with two 20% dropout layers between the node layers
-- Using 1000 epochs of training, the neural network can reach a mean squared error of 2.55e-4 meaning the predicted value is within 0.02 of the actual value on average
+- Using 1000 epochs of training, the neural network can reach a mean squared error of 3.50e-4 meaning the predicted value is within 0.0187 of the actual value on average
 - The NDVI values within the dataset range from 0.01 to 0.50
 - The model can be tested with different input values using the prediction component on the frontend application
 
