@@ -24,14 +24,14 @@ def create_sequential_model(
 
 
 def load_data(filepath: str) -> tuple[Any, Any, Any, Any]:
-    dataframe = pd.read_csv(filepath)
+    dataframe = pd.read_csv(filepath, index_col=0)
     dataframe = dataframe.sample(frac=1)
 
     return split_dataset(dataframe)
 
 
 def split_dataset(
-    dataset: pd.DataFrame, y_col: str = "ndvi", split: float = "0.8"
+    dataset: pd.DataFrame, y_col: str = "ndvi", split: float = 0.8
 ) -> tuple[Any, Any, Any, Any]:
     features, labels = split_features(dataset, y_col)
     train_size = int(len(features) * split)
