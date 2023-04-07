@@ -67,18 +67,18 @@ def combine(
         input_filepath = os.path.join(output_folder, f"{property}.csv")
         df = pd.read_csv(input_filepath, index_col=0)
 
-    if final_df is None:
-        final_df = df
-    else:
-        final_df = final_df.join(df)
+        if final_df is None:
+            final_df = df
+        else:
+            final_df = final_df.join(df)
 
     for col in (
-        "bulk_density_0",
-        "clay_0",
-        "organic_carbon_0",
-        "ph_0",
-        "sand_0",
-        "water_content_0",
+        "bulk_density_b0",
+        "clay_b0",
+        "organic_carbon_b0",
+        "ph_b0",
+        "sand_b0",
+        "water_content_b0",
         "prcp",
         "ndvi",
     ):
@@ -96,7 +96,7 @@ def train(
     output_folder: str | None = None,
     epochs: int = 10,
     batch_size: int = 1000,
-    verbose: int = 1,
+    verbose: int = 2,
     retry: bool = False,
 ):
     if output_folder is None:
@@ -109,7 +109,7 @@ def train(
     if retry:
         model = tf.keras.models.load_model(os.path.join(output_folder, "model"))
     else:
-        model = create_sequential_model()
+        model = create_sequential_model(input_size=x_train.shape[1])
 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
