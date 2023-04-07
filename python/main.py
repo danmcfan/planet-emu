@@ -1,68 +1,149 @@
-import json
+import os
 
-import ee
-import eeconvert
+import pandas as pd
 import geopandas as gpd
 import typer
-from matplotlib import pyplot as plt
-from planet_emu.earth_engine.enum import ImageCollectionEnum, ImageEnum
-from shapely import geometry
+import tensorflow as tf
+
+from planet_emu.earth_engine.enum import ImageEnum
+from planet_emu.earth_engine.fetch import fetch_soil, fetch_weather, fetch_ndvi
+from planet_emu.grid import divide_polygon
+from planet_emu.polygon import create_polygon
+from planet_emu.learn import create_sequential_model, load_data
 
 app = typer.Typer()
 
 
 @app.command()
-def image_collection(
-    enum: ImageCollectionEnum = ImageCollectionEnum.WEATHER, stats: bool = False
+def ingest(
+    state_name: str = "california",
+    scale: int = 10_000,
+    output_folder: str | None = None,
 ):
-    typer.echo("Image collection: {}".format(enum.name))
+    if output_folder is None:
+        output_folder = get_output_folder(state_name, scale)
 
-    image_collection = ee.ImageCollection(enum.name)
+    typer.echo(f"Creating polygon grid for '{state_name}'...")
+    polygon = create_polygon(state_name)
+    grid_gdf = divide_polygon(polygon, scale)
+    typer.echo(f"Grid size: {len(grid_gdf)}")
 
-    if stats:
-        rectangle = geometry.box(-90, 30, -89, 31)
-        input_gdf = gpd.GeoDataFrame(geometry=[rectangle], crs="EPSG:4326")  # type: ignore
-        input_fc = eeconvert.gdfToFc(input_gdf)
+    for member in ImageEnum:
+        typer.echo(f"Fetching {member.value} data...")
+        soil_gdf = fetch_soil(grid_gdf, member, scale)
+        save_csv(soil_gdf, output_folder, member.value)
 
-        image: ee.Image = image_collection.filterDate("2020-01-01", "2020-02-01").mean()
-        output_fc = image.reduceRegions(
-            input_fc,
-            reducer=ee.Reducer.mean(),
-            scale=enum.scale,
-            crs="EPSG:4326",
-            tileScale=1,
-        )
-        output_gdf = eeconvert.fcToGdf(output_fc)
-        output_gdf.to_csv("../data/cli.csv")
+    typer.echo("Fetching weather data...")
+    weather_gdf = fetch_weather(grid_gdf, scale)
+    save_csv(weather_gdf, output_folder, "weather")
 
-        typer.echo("Plotting")
-
-        output_gdf.plot(column=output_gdf.columns[0], cmap="viridis", legend=True)
-        plt.savefig(
-            "../images/cli.png",
-            dpi=1000,
-        )
-    else:
-        first_image: dict = (
-            image_collection.sort("system:time_start", True).first().getInfo()
-        )
-        last_image: dict = (
-            image_collection.sort("system:time_start", False).first().getInfo()
-        )
-        image_count: int = image_collection.size().getInfo()  # type: ignore
-
-        typer.echo("First image: {}".format(first_image.get("id")))
-        typer.echo("Last image: {}".format(last_image.get("id")))
-        typer.echo("Image count: {}".format(image_count))
+    typer.echo("Fetching NDVI data...")
+    ndvi_gdf = fetch_ndvi(grid_gdf, scale)
+    save_csv(ndvi_gdf, output_folder, "ndvi")
 
 
 @app.command()
-def image(enum: ImageEnum = ImageEnum.BULK_DENSITY):
-    typer.echo("Image: {}".format(enum.name))
+def combine(
+    state_name: str = "california",
+    scale: int = 10_000,
+    output_folder: str | None = None,
+):
+    if output_folder is None:
+        output_folder = get_output_folder(state_name, scale)
 
-    image = ee.Image(enum.name)
+    final_df = None
 
-    typer.echo(json.dumps(image.getInfo(), indent=4))
+    typer.echo("Combining CSVs...")
+    for property in (
+        "bulk_density",
+        "clay",
+        "organic_carbon",
+        "ph",
+        "sand",
+        "water_content",
+        "weather",
+        "ndvi",
+    ):
+        input_filepath = os.path.join(output_folder, f"{property}.csv")
+        df = pd.read_csv(input_filepath, index_col=0)
+
+    if final_df is None:
+        final_df = df
+    else:
+        final_df = final_df.join(df)
+
+    for col in (
+        "bulk_density_0",
+        "clay_0",
+        "organic_carbon_0",
+        "ph_0",
+        "sand_0",
+        "water_content_0",
+        "prcp",
+        "ndvi",
+    ):
+        final_df = final_df[~final_df[col].isna()]
+
+    typer.echo("Saving final CSV...")
+    output_filepath = os.path.join(output_folder, "final.csv")
+    final_df.to_csv(output_filepath, index=True)
+
+
+@app.command()
+def train(
+    state_name: str = "california",
+    scale: int = 10_000,
+    output_folder: str | None = None,
+    epochs: int = 10,
+    batch_size: int = 1000,
+    verbose: int = 1,
+    retry: bool = False,
+):
+    if output_folder is None:
+        output_folder = get_output_folder(state_name, scale)
+
+    input_filepath = os.path.join(output_folder, "final.csv")
+
+    x_train, y_train, x_test, y_test = load_data(input_filepath)
+
+    if retry:
+        model = tf.keras.models.load_model(os.path.join(output_folder, "model"))
+    else:
+        model = create_sequential_model()
+
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+        loss=tf.keras.losses.MeanSquaredError(),
+        metrics=["mse"],
+    )
+
+    model.fit(
+        x_train,
+        y_train,
+        epochs=epochs,
+        batch_size=batch_size,
+        validation_data=(x_test, y_test),
+        verbose=verbose,
+    )
+
+    model.save(os.path.join(output_folder, "model"))
+
+
+def get_output_folder(state_name: str, scale: int) -> str:
+    parent_folder = os.path.dirname(os.path.dirname(__file__))
+
+    output_folder = os.path.join(
+        parent_folder, f"data/csv/{state_name.lower()}_{scale}"
+    )
+    os.makedirs(output_folder, exist_ok=True)
+    return output_folder
+
+
+def save_csv(df: gpd.GeoDataFrame, output_folder: str, property: str):
+    output_filepath = os.path.join(output_folder, f"{property}.csv")
+
+    df = df.drop(columns=["geometry"])
+    df.to_csv(output_filepath, index=True)
 
 
 if __name__ == "__main__":
