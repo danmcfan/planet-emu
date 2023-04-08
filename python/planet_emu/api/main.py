@@ -5,7 +5,8 @@ from fastapi.responses import RedirectResponse
 from planet_emu.api import crud, models, schemas
 from planet_emu.api.database import SessionLocal, engine
 from planet_emu.celery import celery
-from planet_emu.celery.tasks import predict_features_task
+
+# from planet_emu.celery.tasks import predict_features_task
 from sqlalchemy.orm import Session
 
 models.Base.metadata.create_all(bind=engine)
@@ -44,8 +45,8 @@ def index():
 
 @app.post("/tasks", response_model=schemas.Task, status_code=201)
 def create_task(features: schemas.Features):
-    task: AsyncResult = predict_features_task.delay(features=features.dict())
-    return schemas.Task(id=task.id, status=task.status)
+    # task: AsyncResult = predict_features_task.delay(features=features.dict())
+    return schemas.Task(id="ABC123", status="Pending")
 
 
 @app.get("/tasks/{task_id}", response_model=schemas.Task)
