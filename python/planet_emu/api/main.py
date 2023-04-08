@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from celery.result import AsyncResult
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,7 +5,7 @@ from fastapi.responses import RedirectResponse
 from planet_emu.api import crud, models, schemas
 from planet_emu.api.database import SessionLocal, engine
 from planet_emu.celery import celery
-from planet_emu.celery.tasks import predict_point
+from planet_emu.celery.tasks import predict_features_task
 from sqlalchemy.orm import Session
 
 models.Base.metadata.create_all(bind=engine)
@@ -44,21 +42,16 @@ def index():
     return "https://api.planet-emu.com/docs"
 
 
-@app.post("/tasks/", response_model=schemas.Task, status_code=201)
-def create_task(x: float, y: float, year: int = 2020):
-    if not (-124.763068 <= x <= -66.949895):
-        raise HTTPException(400, "X coordinate is out of range")
-    if not (24.523096 <= y <= 49.384358):
-        raise HTTPException(400, "Y coordinate is out of range")
-    if not (2000 <= year <= 2020):
-        raise HTTPException(400, "Year is out of range")
-
-    return predict_point.delay(x, y, year)
+@app.post("/tasks", response_model=schemas.Task, status_code=201)
+def create_task(features: schemas.Features):
+    task: AsyncResult = predict_features_task.delay(features=features.dict())
+    return schemas.Task(id=task.id, status=task.status)
 
 
 @app.get("/tasks/{task_id}", response_model=schemas.Task)
 def read_task(task_id: str):
-    return AsyncResult(task_id, app=celery)
+    task = AsyncResult(task_id, app=celery)
+    return schemas.Task(id=task.id, status=task.status)
 
 
 @app.get("/results", response_model=list[schemas.Result])
@@ -85,13 +78,3 @@ def delete_result(task_id: str, db: Session = Depends(get_db)):
 
     db.delete(result)
     db.commit()
-
-
-@app.get("/grid")
-def read_grid(
-    size: int = 50_000,
-    limit: int = 100,
-    offset: int = 0,
-    db: Session = Depends(get_db),
-):
-    return crud.get_grid(db, size, limit, offset)

@@ -1,5 +1,4 @@
 import geopandas as gpd
-
 from planet_emu.earth_engine import collection, enum, image
 from planet_emu.earth_engine.sample import sample_regions
 

@@ -2,7 +2,6 @@ from copy import deepcopy
 
 import ee
 import geopandas as gpd
-
 from planet_emu.earth_engine import image
 
 
