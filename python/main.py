@@ -4,12 +4,11 @@ import geopandas as gpd
 import pandas as pd
 import tensorflow as tf
 import typer
-from planet_emu.earth_engine.enum import ImageEnum
-from planet_emu.earth_engine.fetch import fetch_ndvi, fetch_soil, fetch_weather
-from planet_emu.grid import divide_polygon
-from planet_emu.learn import create_sequential_model, load_data
-from planet_emu.polygon import create_polygon
-from planet_emu.predict import Features, predict_features
+from earth.enum import ImageEnum
+from earth.fetch import fetch_ndvi, fetch_soil, fetch_weather
+from earth.grid import divide_polygon
+from earth.polygon import create_polygon
+from model.learn import create_sequential_model, load_data
 
 app = typer.Typer()
 
@@ -127,64 +126,6 @@ def train(
     )
 
     model.save(os.path.join(output_folder, "model"))
-
-
-@app.command()
-def predict():
-    features = Features(
-        **{
-            "bulk_density_b0": 105,
-            "bulk_density_b10": 110,
-            "bulk_density_b30": 130,
-            "bulk_density_b60": 130,
-            "bulk_density_b100": 120,
-            "bulk_density_b200": 125,
-            "clay_b0": 25,
-            "clay_b10": 25,
-            "clay_b30": 30,
-            "clay_b60": 25,
-            "clay_b100": 25,
-            "clay_b200": 25,
-            "ph_b0": 10,
-            "ph_b10": 10,
-            "ph_b30": 5,
-            "ph_b60": 5,
-            "ph_b100": 5,
-            "ph_b200": 5,
-            "sand_b0": 60,
-            "sand_b10": 60,
-            "sand_b30": 60,
-            "sand_b60": 60,
-            "sand_b100": 60,
-            "sand_b200": 60,
-            "organic_carbon_b0": 45,
-            "organic_carbon_b10": 45,
-            "organic_carbon_b30": 45,
-            "organic_carbon_b60": 45,
-            "organic_carbon_b100": 45,
-            "organic_carbon_b200": 45,
-            "water_content_b0": 35,
-            "water_content_b10": 35,
-            "water_content_b30": 35,
-            "water_content_b60": 35,
-            "water_content_b100": 35,
-            "water_content_b200": 35,
-            "prcp": 5,
-            "srad": 300,
-            "swe": 0,
-            "tmax": 15,
-            "tmin": 10,
-            "vp": 1000,
-        }
-    )
-
-    for k, v in features.dict().items():
-        typer.echo(f"{k}: {v}")
-        typer.echo(f"Type: {type(k)}")
-        typer.echo(f"Type: {type(v)}")
-
-    prediction = predict_features(features)
-    typer.echo(f"Prediction: {prediction}")
 
 
 def get_output_folder(state_name: str, scale: int) -> str:

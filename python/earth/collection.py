@@ -1,7 +1,7 @@
 import datetime as dt
 
 import ee
-from planet_emu.earth_engine.enum import ImageCollectionEnum
+from earth.enum import ImageCollectionEnum
 
 
 def add_ndvi_band(
