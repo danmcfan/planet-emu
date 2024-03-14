@@ -24,7 +24,7 @@
 			bind:value
 		/>
 		<div class="flex flex-row space-between font-mono">
-			<p class="my-2">Depth: {selectedSliderID} cm</p>
+			<p class="my-2 text-[0.75rem]">Depth: {selectedSliderID} cm</p>
 		</div>
 	</div>
 {/if}

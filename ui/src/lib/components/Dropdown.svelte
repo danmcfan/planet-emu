@@ -30,10 +30,10 @@
 	}
 </script>
 
-<div class="flex flex-col justify-center items-center mt-8">
+<div class="flex flex-col justify-center items-center mt-4">
 	<select
 		bind:value={selectedDropdownID}
-		class="w-72 sm:w-96 mx-auto font-mono text-center border-solid border-gray-400 border-2 rounded-lg"
+		class="w-72 sm:w-96 mx-auto font-mono text-center text-[0.75rem] border-solid border-gray-400 border-2 rounded-lg"
 	>
 		{#each choices as choice (choice.id)}
 			<option value={choice.id}>{choice.title}</option>

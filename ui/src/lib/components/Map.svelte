@@ -32,7 +32,7 @@
 	<link href="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css" rel="stylesheet" />
 </svelte:head>
 
-<div bind:this={container} class="w-full h-[24rem] relative">
+<div bind:this={container} class="w-[95%] h-[24rem] relative rounded-md shadow-sm shadow-black">
 	{#if map}
 		<slot />
 	{/if}

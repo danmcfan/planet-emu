@@ -6,7 +6,7 @@
 </script>
 
 <nav
-	class="w-full h-12 flex flex-row justify-between items-center bg-blue-500 border-white border-b-[0.1rem]"
+	class="w-full h-12 flex flex-row justify-between items-center bg-blue-500 shadow-sm shadow-black"
 >
 	<div class="flex flex-row justify-center items-center mx-4">
 		<div class="text-white text-[2rem] mr-4">{@html earthSvg}</div>

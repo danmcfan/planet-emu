@@ -3,5 +3,7 @@
 	import NavBar from '../lib/components/NavBar.svelte';
 </script>
 
-<NavBar />
-<slot />
+<div class="w-screen h-screen">
+	<NavBar />
+	<slot />
+</div>

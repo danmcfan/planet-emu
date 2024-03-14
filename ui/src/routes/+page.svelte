@@ -98,15 +98,17 @@
 	};
 </script>
 
-<Map lng={-120.0} lat={37.5} zoom={4}>
-	<Legend {colorOptions} {fillOpacity} />
-	<MapControls />
-	{#each geometryCollections as geometryCollection (geometryCollection.layerName)}
-		<GeometryCollection {...geometryCollection} {fillColor} {fillOpacity} />
-		<MapPopup layerName={geometryCollection.layerName} {getHTML} {column} />
-	{/each}
-</Map>
+<div class="flex flex-col justify-center items-center mt-4">
+	<Map lng={-120.0} lat={37.5} zoom={4}>
+		<Legend {colorOptions} {fillOpacity} />
+		<MapControls />
+		{#each geometryCollections as geometryCollection (geometryCollection.layerName)}
+			<GeometryCollection {...geometryCollection} {fillColor} {fillOpacity} />
+			<MapPopup layerName={geometryCollection.layerName} {getHTML} {column} />
+		{/each}
+	</Map>
 
-<Buttons bind:selectedButtonID />
-<Dropdown {selectedButtonID} bind:selectedDropdownID />
-<Slider {selectedButtonID} bind:selectedSliderID />
+	<Buttons bind:selectedButtonID />
+	<Dropdown {selectedButtonID} bind:selectedDropdownID />
+	<Slider {selectedButtonID} bind:selectedSliderID />
+</div>

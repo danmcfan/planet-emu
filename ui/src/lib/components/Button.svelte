@@ -13,7 +13,7 @@
 >
 	{@html svg}
 	<span
-		class="absolute top-full left-1/2 transform -translate-x-1/2 px-2 py-1 text-black font-mono text-xs opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+		class="absolute top-full left-1/2 transform -translate-x-1/2 px-2 py-1 text-black font-mono text-[0.75rem] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
 	>
 		{tooltip}
 	</span>
