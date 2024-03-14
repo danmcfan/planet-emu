@@ -1,0 +1,6 @@
+__pycache__/
+
+data/
+
+.env
+.private-key.json

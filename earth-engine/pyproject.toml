@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "earth-engine"
+version = "0.1.0"
+description = ""
+authors = []
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+earthengine-api = "^0.1.394"
+python-dotenv = "^1.0.1"
+geemap = "^0.32.0"
+geopandas = "^0.14.3"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.2.0"
+isort = "^5.13.2"
+pytest = "^8.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
