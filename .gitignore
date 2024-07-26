@@ -1,5 +1,6 @@
 __pycache__/
 
 data/
+models/
 
 .private-key.json

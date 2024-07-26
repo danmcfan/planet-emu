@@ -8,6 +8,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 earthengine-api = "^0.1.413"
+torch = "^2.4.0"
+numpy = "^2.0.1"
+scikit-learn = "^1.5.1"
+fastapi = "^0.111.1"
 
 
 [tool.poetry.group.dev.dependencies]

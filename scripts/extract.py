@@ -13,8 +13,8 @@ MIN_Y = 36.99
 MAX_Y = 41.00
 
 # 0.00001 degrees = 1 meter
-DELTA_X = 0.025  # 2.5 kilometers
-DELTA_Y = 0.025  # 2.5 kilometers
+DELTA_X = 0.01  # 1 kilometer
+DELTA_Y = 0.01  # 1 kilometer
 
 
 def main():
@@ -54,14 +54,14 @@ def main():
         t0 = time.perf_counter()
         image: ee.Image = (
             ee.ImageCollection(image_collection_name)
-            .filterDate("2023-01-01", "2023-01-31")
+            .filterDate("2023-01-01", "2023-12-31")
             .reduce(reducer=ee.Reducer.mean())
         )
 
         if layer == "modis":
-            image = image.normalizedDifference(["sur_refl_b02", "sur_refl_b01"]).rename(
-                "ndvi"
-            )
+            image = image.normalizedDifference(
+                ["sur_refl_b02_mean", "sur_refl_b01_mean"]
+            ).rename("ndvi")
 
         output_features = reduce_regions(
             image, features, 250 if layer == "modis" else 1000
