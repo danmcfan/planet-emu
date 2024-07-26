@@ -147,14 +147,14 @@ if __name__ == "__main__":
 
     # Define paths to GeoJSON files and their property mappings
     geojson_files = [
-        "data/sample/bulkdens.geojson",
-        "data/sample/clay.geojson",
-        "data/sample/ocarbon.geojson",
-        "data/sample/ph.geojson",
-        "data/sample/sand.geojson",
-        "data/sample/water.geojson",
-        "data/sample/daymet.geojson",
-        "data/sample/modis.geojson",
+        "data/bulkdens.geojson",
+        "data/clay.geojson",
+        "data/ocarbon.geojson",
+        "data/ph.geojson",
+        "data/sand.geojson",
+        "data/water.geojson",
+        "data/daymet.geojson",
+        "data/modis.geojson",
     ]
 
     property_mapping = {
@@ -196,7 +196,7 @@ if __name__ == "__main__":
     num_epochs = 100
     train_model(model, train_loader, criterion, optimizer, num_epochs, device)
 
-    torch.save(model.state_dict(), "models/sample/ndvi_prediction_model.pth")
+    torch.save(model.state_dict(), "models/ndvi_prediction_model.pth")
 
     print("Training completed and model saved.")
 
