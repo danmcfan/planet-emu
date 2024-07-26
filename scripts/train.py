@@ -1,51 +1,36 @@
 import json
 from collections import defaultdict
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader, Dataset, random_split
 from sklearn.preprocessing import StandardScaler
-import numpy as np
+from torch.utils.data import DataLoader, Dataset, random_split
 
 
 class GeojsonDataset(Dataset):
-    def __init__(self, file_paths: list[str], property_mapping: dict[str, list[str]]):
+    def __init__(self, file_path: str, property_names: list[str], ndvi_key: str):
         self.data = defaultdict(dict)
-        self.feature_names = []
-        self.property_mapping = property_mapping
+        self.feature_names = property_names
 
         # Load data from GeoJSON files
-        for file_path in file_paths:
-            with open(file_path, "r") as f:
-                geojson_data = json.load(f)
+        with open(file_path, "r") as f:
+            geojson_data = json.load(f)
 
-            file_key = file_path.split("/")[-1].split(".")[
-                0
-            ]  # Extract file key from filename
-            properties_to_extract = self.property_mapping[file_key]
-            feature_names = [
-                f"{file_key}_{prop_name}" for prop_name in properties_to_extract
-            ]
-            self.feature_names.extend(feature_names)
+        for feature in geojson_data["features"]:
+            properties = feature["properties"]
+            id_ = feature["id"]
 
-            for feature in geojson_data["features"]:
-                properties = feature["properties"]
-                id_ = properties["id"]
-
-                for prop_name, feature_name in zip(
-                    properties_to_extract, feature_names
-                ):
-                    value = properties.get(prop_name, None)
-                    if value is not None:
-                        self.data[id_][feature_name] = value
+            for property_name in property_names:
+                value = properties.get(property_name, None)
+                if value is not None:
+                    self.data[id_][property_name] = value
 
         # Convert data to tensors
         self.ids = sorted(self.data.keys())
         features = []
         ndvi = []
-
-        ndvi_key = f"{file_paths[-1].split('/')[-1].split('.')[0]}_{property_mapping[file_paths[-1].split('/')[-1].split('.')[0]][0]}"
 
         for id_ in self.ids:
             feature_values = [
@@ -145,39 +130,56 @@ if __name__ == "__main__":
     torch.manual_seed(42)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Define paths to GeoJSON files and their property mappings
-    geojson_files = [
-        "data/bulkdens.geojson",
-        "data/clay.geojson",
-        "data/ocarbon.geojson",
-        "data/ph.geojson",
-        "data/sand.geojson",
-        "data/water.geojson",
-        "data/daymet.geojson",
-        "data/modis.geojson",
+    properties = [
+        "bulkdens_b0",
+        "bulkdens_b10",
+        "bulkdens_b100",
+        "bulkdens_b200",
+        "bulkdens_b30",
+        "bulkdens_b60",
+        "clay_b0",
+        "clay_b10",
+        "clay_b100",
+        "clay_b200",
+        "clay_b30",
+        "clay_b60",
+        "ocarbon_b0",
+        "ocarbon_b10",
+        "ocarbon_b100",
+        "ocarbon_b200",
+        "ocarbon_b30",
+        "ocarbon_b60",
+        "ph_b0",
+        "ph_b10",
+        "ph_b100",
+        "ph_b200",
+        "ph_b30",
+        "ph_b60",
+        "sand_b0",
+        "sand_b10",
+        "sand_b100",
+        "sand_b200",
+        "sand_b30",
+        "sand_b60",
+        "water_b0",
+        "water_b10",
+        "water_b100",
+        "water_b200",
+        "water_b30",
+        "water_b60",
+        "daymet_dayl_mean",
+        "daymet_prcp_mean",
+        "daymet_srad_mean",
+        "daymet_swe_mean",
+        "daymet_tmax_mean",
+        "daymet_tmin_mean",
+        "daymet_vp_mean",
+        "landsat_ndvi_mean",
     ]
-
-    property_mapping = {
-        "bulkdens": ["b0", "b10", "b30", "b60", "b100", "b200"],
-        "clay": ["b0", "b10", "b30", "b60", "b100", "b200"],
-        "ocarbon": ["b0", "b10", "b30", "b60", "b100", "b200"],
-        "ph": ["b0", "b10", "b30", "b60", "b100", "b200"],
-        "sand": ["b0", "b10", "b30", "b60", "b100", "b200"],
-        "water": ["b0", "b10", "b30", "b60", "b100", "b200"],
-        "daymet": [
-            "dayl_mean",
-            "prcp_mean",
-            "srad_mean",
-            "swe_mean",
-            "tmax_mean",
-            "tmin_mean",
-            "vp_mean",
-        ],
-        "modis": ["mean"],
-    }
+    ndvi_key = "landsat_ndvi_mean"
 
     # Create full dataset
-    full_dataset = GeojsonDataset(geojson_files, property_mapping)
+    full_dataset = GeojsonDataset("data/final/10000/grid.geojson", properties, ndvi_key)
 
     # Split dataset into train and test sets
     train_size = int(0.8 * len(full_dataset))

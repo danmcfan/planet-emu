@@ -1,0 +1,1 @@
+mb-util tiles_${1:-10000}.mbtiles tiles_${1:-10000} --image_format=pbf

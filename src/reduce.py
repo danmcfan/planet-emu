@@ -23,6 +23,8 @@ def reduce_regions(
             crs="EPSG:4326",
         )
         output_features = output_fc.getInfo()["features"]
+        for feature in output_features:
+            feature["id"] = int(feature["id"])
 
         features.extend(output_features)
         i += BATCH_SIZE

@@ -2,19 +2,16 @@ import json
 import time
 
 import ee
+import shapely
 
-from src.grid import create_features_grid
+from src.geojson import write_polygons_to_geojson_file
+from src.grid import create_polygons_grid
 from src.reduce import reduce_regions
 
-MIN_X = -109.05
-MAX_X = -102.05
+DELTA = 0.05
+SCALE_FACTOR = 100_000
 
-MIN_Y = 36.99
-MAX_Y = 41.00
-
-# 0.00001 degrees = 1 meter
-DELTA_X = 0.01  # 1 kilometer
-DELTA_Y = 0.01  # 1 kilometer
+SCALE = int(DELTA * SCALE_FACTOR)
 
 
 def main():
@@ -25,8 +22,22 @@ def main():
     ee.Initialize(credentials)
 
     print("Creating feature collection...")
-    features = create_features_grid(MIN_X, MIN_Y, MAX_X, MAX_Y, DELTA_X, DELTA_Y)
-    print(f"Count of grid features: {len(features)}")
+    polygons = create_polygons_grid(delta_x=DELTA, delta_y=DELTA)
+    print(f"Count of grid polygons: {len(polygons)}")
+
+    write_polygons_to_geojson_file(polygons, f"data/raw/{SCALE}/grid.geojson")
+
+    features = [
+        ee.Feature(
+            {
+                "type": "Feature",
+                "id": str(index),
+                "properties": {},
+                "geometry": json.loads(shapely.to_geojson(polygon)),
+            }
+        )
+        for index, polygon in enumerate(polygons)
+    ]
 
     for layer, image_name in [
         ("bulkdens", "OpenLandMap/SOL/SOL_BULKDENS-FINEEARTH_USDA-4A1H_M/v02"),
@@ -39,38 +50,65 @@ def main():
         print(f"Reducing regions for {layer}...")
         t0 = time.perf_counter()
         image = ee.Image(image_name)
-        output_features = reduce_regions(image, features, 250)
+        output_features = reduce_regions(image, features, SCALE)
         print(f"Elapsed time: {time.perf_counter() - t0}")
 
         print("Writing to file...")
-        with open(f"data/{layer}.geojson", "w") as f:
+        with open(f"data/raw/{SCALE}/{layer}.geojson", "w") as f:
             json.dump({"type": "FeatureCollection", "features": output_features}, f)
 
     for layer, image_collection_name in [
         ("daymet", "NASA/ORNL/DAYMET_V4"),
-        ("modis", "MODIS/061/MOD09GQ"),
+        ("landsat", "LANDSAT/LC09/C02/T1_L2"),
     ]:
         print(f"Reducing regions for {layer}...")
         t0 = time.perf_counter()
         image: ee.Image = (
             ee.ImageCollection(image_collection_name)
-            .filterDate("2023-01-01", "2023-12-31")
+            .filterDate("2023-07-01", "2023-07-31")
             .reduce(reducer=ee.Reducer.mean())
         )
 
-        if layer == "modis":
-            image = image.normalizedDifference(
-                ["sur_refl_b02_mean", "sur_refl_b01_mean"]
-            ).rename("ndvi")
-
-        output_features = reduce_regions(
-            image, features, 250 if layer == "modis" else 1000
-        )
+        output_features = reduce_regions(image, features, SCALE)
         print(f"Elapsed time: {time.perf_counter() - t0}")
 
         print("Writing to file...")
-        with open(f"data/{layer}.geojson", "w") as f:
+        with open(f"data/raw/{SCALE}/{layer}.geojson", "w") as f:
             json.dump({"type": "FeatureCollection", "features": output_features}, f)
+
+    with open(f"data/raw/{SCALE}/grid.geojson", "r") as f:
+        features = json.load(f)["features"]
+
+    for filename in [
+        "bulkdens",
+        "clay",
+        "ocarbon",
+        "ph",
+        "sand",
+        "water",
+        "daymet",
+        "landsat",
+    ]:
+        with open(f"data/raw/{SCALE}/{filename}.geojson", "r") as f:
+            property_features_list = json.load(f)["features"]
+
+        property_features = {
+            feature["id"]: feature for feature in property_features_list
+        }
+        for feature in features:
+            property_feature = property_features[feature["id"]]
+            for property, value in property_feature["properties"].items():
+                feature["properties"][f"{filename}_{property}"] = value
+
+    for feature in features:
+        red = feature["properties"]["landsat_SR_B4_mean"]
+        nir = feature["properties"]["landsat_SR_B5_mean"]
+        feature["properties"]["landsat_ndvi_mean"] = (
+            None if red is None or nir is None else ((nir - red) / (nir + red))
+        )
+
+    with open(f"data/final/{SCALE}/grid.geojson", "w") as f:
+        json.dump({"type": "FeatureCollection", "features": features}, f)
 
 
 if __name__ == "__main__":

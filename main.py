@@ -1,8 +1,9 @@
 import os
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import HTMLResponse, FileResponse
-from fastapi.templating import Jinja2Templates
+
 import uvicorn
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
