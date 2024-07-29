@@ -1,3 +1,5 @@
+import time
+
 import torch
 from torch.utils.data import Dataset, DataLoader, random_split
 from rasterio.merge import merge
@@ -8,6 +10,12 @@ import torch.nn as nn
 import torch.optim as optim
 
 GRID_COUNT = 21
+NUM_EPOCHS = 10
+DEVICE = torch.device(
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps" if torch.backends.mps.is_available() else "cpu"
+)
 
 
 class PixelDataset(Dataset):
@@ -71,6 +79,8 @@ class NDVIPredictionModel(nn.Module):
 def train_model(model, train_loader, criterion, optimizer, num_epochs, device):
     model.to(device)
     for epoch in range(num_epochs):
+        t0 = time.perf_counter()
+
         model.train()
         running_loss = 0.0
         for inputs, targets in train_loader:
@@ -83,7 +93,9 @@ def train_model(model, train_loader, criterion, optimizer, num_epochs, device):
             running_loss += loss.item()
 
         epoch_loss = running_loss / len(train_loader)
-        print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss}")
+        print(
+            f"Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss}, Time: {time.perf_counter() - t0}"
+        )
 
 
 def evaluate_model(model, test_loader, criterion, device):
@@ -118,7 +130,7 @@ def evaluate_model(model, test_loader, criterion, device):
 def main():
     # Set random seed for reproducibility
     torch.manual_seed(42)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Running on {DEVICE}...")
 
     # Create the dataset and dataloader
     full_dataset = PixelDataset()
@@ -134,19 +146,18 @@ def main():
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
 
-    num_epochs = 20
-    train_model(model, train_loader, criterion, optimizer, num_epochs, device)
+    train_model(model, train_loader, criterion, optimizer, NUM_EPOCHS, DEVICE)
 
     torch.save(model.state_dict(), "models/ndvi_prediction_model.pth")
 
     print("Training completed and model saved.")
 
     print("\nEvaluating model on test set:")
-    evaluate_model(model, test_loader, criterion, device)
+    evaluate_model(model, test_loader, criterion, DEVICE)
 
     model.eval()
     with torch.no_grad():
-        sample_input = full_dataset.features[0].unsqueeze(0).to(device)
+        sample_input = full_dataset.features[0].unsqueeze(0).to(DEVICE)
         predicted_ndvi = model(sample_input)
         print(f"\nSample prediction:")
         print(f"Sample input values: {sample_input}")
