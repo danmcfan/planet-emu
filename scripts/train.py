@@ -1,61 +1,51 @@
-import json
-from collections import defaultdict
-
+import torch
+from torch.utils.data import Dataset, DataLoader, random_split
+from rasterio.merge import merge
 import numpy as np
+from sklearn.preprocessing import StandardScaler
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from sklearn.preprocessing import StandardScaler
-from torch.utils.data import DataLoader, Dataset, random_split
+
+GRID_COUNT = 21
 
 
-class GeojsonDataset(Dataset):
-    def __init__(self, file_path: str, property_names: list[str], ndvi_key: str):
-        self.data = defaultdict(dict)
-        self.feature_names = property_names
+class PixelDataset(Dataset):
+    def __init__(self):
+        self.features = None
+        self.ndvi = None
+        self.load_data()
 
-        # Load data from GeoJSON files
-        with open(file_path, "r") as f:
-            geojson_data = json.load(f)
+    def load_data(self):
+        bands = []
+        for layer in ["bulkdens", "clay", "ocarbon", "ph", "sand", "water", "daymet"]:
+            src, _ = merge(
+                [
+                    f"data/{layer}/{grid_index}.geotiff"
+                    for grid_index in range(GRID_COUNT)
+                ]
+            )
+            for band in src:
+                band = band.flatten()
+                bands.append(band)
 
-        for feature in geojson_data["features"]:
-            properties = feature["properties"]
-            id_ = feature["id"]
-
-            for property_name in property_names:
-                value = properties.get(property_name, None)
-                if value is not None:
-                    self.data[id_][property_name] = value
-
-        # Convert data to tensors
-        self.ids = sorted(self.data.keys())
-        features = []
-        ndvi = []
-
-        for id_ in self.ids:
-            feature_values = [
-                self.data[id_].get(name, 0)
-                for name in self.feature_names
-                if name != ndvi_key
-            ]
-            features.append(feature_values)
-            ndvi.append([self.data[id_].get(ndvi_key, 0)])
+        features = np.stack(bands, axis=-1)
 
         self.scaler = StandardScaler()
         features_normalized = self.scaler.fit_transform(features)
 
         self.features = torch.tensor(features_normalized, dtype=torch.float32)
-        self.ndvi = torch.tensor(ndvi, dtype=torch.float32)
 
-        print(f"Number of features: {len(self.feature_names) - 1}")
-        print(f"Feature shape: {self.features.shape}")
-        print(f"NDVI shape: {self.ndvi.shape}")
+        src, _ = merge(
+            [f"data/landsat/{grid_index}.geotiff" for grid_index in range(GRID_COUNT)]
+        )
+        self.ndvi = torch.tensor(src.flatten(), dtype=torch.float32)
 
     def __len__(self):
-        return len(self.ids)
+        return self.features.shape[0]
 
     def __getitem__(self, idx):
-        return self.features[idx], self.ndvi[idx]
+        return self.features[idx], torch.tensor([self.ndvi[idx]], dtype=torch.float32)
 
 
 class NDVIPredictionModel(nn.Module):
@@ -125,77 +115,26 @@ def evaluate_model(model, test_loader, criterion, device):
     print(f"R-squared: {r2:.4f}")
 
 
-if __name__ == "__main__":
+def main():
     # Set random seed for reproducibility
     torch.manual_seed(42)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    properties = [
-        "bulkdens_b0",
-        "bulkdens_b10",
-        "bulkdens_b100",
-        "bulkdens_b200",
-        "bulkdens_b30",
-        "bulkdens_b60",
-        "clay_b0",
-        "clay_b10",
-        "clay_b100",
-        "clay_b200",
-        "clay_b30",
-        "clay_b60",
-        "ocarbon_b0",
-        "ocarbon_b10",
-        "ocarbon_b100",
-        "ocarbon_b200",
-        "ocarbon_b30",
-        "ocarbon_b60",
-        "ph_b0",
-        "ph_b10",
-        "ph_b100",
-        "ph_b200",
-        "ph_b30",
-        "ph_b60",
-        "sand_b0",
-        "sand_b10",
-        "sand_b100",
-        "sand_b200",
-        "sand_b30",
-        "sand_b60",
-        "water_b0",
-        "water_b10",
-        "water_b100",
-        "water_b200",
-        "water_b30",
-        "water_b60",
-        "daymet_dayl_mean",
-        "daymet_prcp_mean",
-        "daymet_srad_mean",
-        "daymet_swe_mean",
-        "daymet_tmax_mean",
-        "daymet_tmin_mean",
-        "daymet_vp_mean",
-        "landsat_ndvi_mean",
-    ]
-    ndvi_key = "landsat_ndvi_mean"
+    # Create the dataset and dataloader
+    full_dataset = PixelDataset()
 
-    # Create full dataset
-    full_dataset = GeojsonDataset("data/final/10000/grid.geojson", properties, ndvi_key)
-
-    # Split dataset into train and test sets
     train_size = int(0.8 * len(full_dataset))
     test_size = len(full_dataset) - train_size
     train_dataset, test_dataset = random_split(full_dataset, [train_size, test_size])
 
-    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=2048, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=2048, shuffle=False)
 
-    input_size = len(full_dataset.feature_names) - 1
-    print(f"Input size: {input_size}")
-    model = NDVIPredictionModel(input_size)
+    model = NDVIPredictionModel(full_dataset.features.shape[1])
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
 
-    num_epochs = 100
+    num_epochs = 20
     train_model(model, train_loader, criterion, optimizer, num_epochs, device)
 
     torch.save(model.state_dict(), "models/ndvi_prediction_model.pth")
@@ -210,7 +149,10 @@ if __name__ == "__main__":
         sample_input = full_dataset.features[0].unsqueeze(0).to(device)
         predicted_ndvi = model(sample_input)
         print(f"\nSample prediction:")
-        print(f"Sample input features: {full_dataset.feature_names[:-1]}")
         print(f"Sample input values: {sample_input}")
         print(f"Predicted NDVI: {predicted_ndvi.item():.4f}")
         print(f"Actual NDVI: {full_dataset.ndvi[0].item():.4f}")
+
+
+if __name__ == "__main__":
+    main()

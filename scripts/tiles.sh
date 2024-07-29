@@ -1,1 +1,0 @@
-tippecanoe -o tiles_${1:-10000}.mbtiles --drop-densest-as-needed -z${2:-14} data/final/${1:-10000}/grid.geojson --force
