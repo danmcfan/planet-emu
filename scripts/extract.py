@@ -1,7 +1,7 @@
 import os
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import queue
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import ee
 
@@ -157,7 +157,7 @@ def write_geotiff(
         request["expression"] = expression
         raw_data = ee.data.computePixels(request)
 
-    os.makedirs(f"data/{layer}")
+    os.makedirs(f"data/{layer}", exist_ok=True)
     with open(f"data/{layer}/{index}.geotiff", "wb") as f:
         f.write(raw_data)
 

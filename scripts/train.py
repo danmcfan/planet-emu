@@ -1,13 +1,13 @@
+import os
 import time
 
-import torch
-from torch.utils.data import Dataset, DataLoader, random_split
-from rasterio.merge import merge
 import numpy as np
-from sklearn.preprocessing import StandardScaler
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from rasterio.merge import merge
+from sklearn.preprocessing import StandardScaler
+from torch.utils.data import DataLoader, Dataset, random_split
 
 OFFSET = 0
 GRID_COUNT = 286
@@ -149,6 +149,7 @@ def main():
 
     train_model(model, train_loader, criterion, optimizer, NUM_EPOCHS, DEVICE)
 
+    os.makedirs("models", exist_ok=True)
     torch.save(model.state_dict(), "models/ndvi_prediction_model.pth")
 
     print("Training completed and model saved.")
