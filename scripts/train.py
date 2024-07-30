@@ -9,7 +9,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-GRID_COUNT = 21
+OFFSET = 0
+GRID_COUNT = 286
 NUM_EPOCHS = 10
 DEVICE = torch.device(
     "cuda"
@@ -29,8 +30,8 @@ class PixelDataset(Dataset):
         for layer in ["bulkdens", "clay", "ocarbon", "ph", "sand", "water", "daymet"]:
             src, _ = merge(
                 [
-                    f"data/{layer}/{grid_index}.geotiff"
-                    for grid_index in range(GRID_COUNT)
+                    f"data/{layer}/{i}.geotiff"
+                    for i in range(OFFSET, OFFSET + GRID_COUNT)
                 ]
             )
             for band in src:
@@ -45,7 +46,7 @@ class PixelDataset(Dataset):
         self.features = torch.tensor(features_normalized, dtype=torch.float32)
 
         src, _ = merge(
-            [f"data/landsat/{grid_index}.geotiff" for grid_index in range(GRID_COUNT)]
+            [f"data/landsat/{i}.geotiff" for i in range(OFFSET, OFFSET + GRID_COUNT)]
         )
         self.ndvi = torch.tensor(src.flatten(), dtype=torch.float32)
 
