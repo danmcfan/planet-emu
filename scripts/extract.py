@@ -1,75 +1,63 @@
 import os
+import logging
 import queue
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import click
 import ee
 
-WORKER_COUNT = 35
+from src.grid import GridGenerator
+
 SENTINEL = None
 
-WIDTH, HEIGHT, SCALE = 1000, 1000, 250
-XMIN, YMIN, XMAX, YMAX = -124.68721, 25.079916, -66.96466, 49.389285
+logger = logging.getLogger(__name__)
 
 
-class GridGenerator:
-    def __init__(self, scale: int, width: int, height: int):
-        self.scale = scale
-        self.width = width
-        self.height = height
-
-        self.proj = ee.Projection("EPSG:4326").atScale(self.scale).getInfo()
-
-        self.scale_x = self.proj["transform"][0]
-        self.scale_y = -self.proj["transform"][4]
-
-        self.crs = self.proj["crs"]
-
-    def create_grids(
-        self, xmin: float, ymin: float, xmax: float, ymax: float
-    ) -> list[tuple[int, dict]]:
-        grids = []
-        index = 0
-        x = xmin
-        y = ymax
-
-        while x < xmax:
-            while y > ymin:
-                grids.append(
-                    (
-                        index,
-                        {
-                            "dimensions": {"width": self.width, "height": self.height},
-                            "affineTransform": {
-                                "scaleX": self.scale_x,
-                                "shearX": 0,
-                                "translateX": x,
-                                "shearY": 0,
-                                "scaleY": self.scale_y,
-                                "translateY": y,
-                            },
-                            "crsCode": self.crs,
-                        },
-                    )
-                )
-
-                y += self.scale_y * self.height
-                index += 1
-
-            y = ymax
-            x += self.scale_x * self.width
-
-        return grids
-
-
-def main():
-    print("Initializing...")
-    credentials = ee.ServiceAccountCredentials(
-        "default@ee-danmcfan.iam.gserviceaccount.com", ".private-key.json"
+@click.command()
+@click.option("--workers", default=35, help="Number of parallel workers to run")
+@click.option("--width", default=1000, help="Width of raster tile in pixels")
+@click.option("--height", default=1000, help="Height of raster tile in pixels")
+@click.option("--scale", default=250, help="Scale of raster tile in meters")
+@click.option("--xmin", default=-124.68721, help="X coordinate minimum in degrees")
+@click.option("--ymin", default=25.079916, help="X coordinate minimum in degrees")
+@click.option("--xmax", default=-66.96466, help="X coordinate minimum in degrees")
+@click.option("--ymax", default=49.389285, help="X coordinate minimum in degrees")
+@click.option(
+    "--start_date", default="2023-01-01", help="Start date for image collection filter"
+)
+@click.option(
+    "--end_date", default="2023-12-31", help="End date for image collection filter"
+)
+@click.option("--output_dir", default="data", help="Output directory")
+def main(
+    workers: int,
+    width: int,
+    height: int,
+    scale: int,
+    xmin: float,
+    ymin: float,
+    xmax: float,
+    ymax: float,
+    start_date: str,
+    end_date: str,
+    output_dir: str,
+):
+    logging.basicConfig(
+        level=logging.INFO,
+        format="[%(asctime)s] %(levelname)s - %(message)s",
+        datefmt="%H:%M:%S",
     )
+
+    email = os.getenv("GEE_EMAIL", "default@ee-danmcfan.iam.gserviceaccount.com")
+    key_file = os.getenv("GEE_KEY_FILE", ".private-key.json")
+
+    logger.info("Initializing Google Earth Engine...")
+    credentials = ee.ServiceAccountCredentials(email, key_file)
     ee.Initialize(credentials)
 
-    grid_generator = GridGenerator(SCALE, WIDTH, HEIGHT)
+    grid_generator = GridGenerator(scale, width, height)
+    grids = grid_generator.create_grids(xmin, ymin, xmax, ymax)
 
     task_queue = queue.Queue()
 
@@ -84,7 +72,7 @@ def main():
         image = ee.Image(image_name)
         image_id = image.getInfo()["id"]
 
-        for index, grid in grid_generator.create_grids(XMIN, YMIN, XMAX, YMAX):
+        for index, grid in grids:
             task_queue.put(
                 {"grid": grid, "layer": layer, "index": index, "asset_id": image_id}
             )
@@ -95,7 +83,7 @@ def main():
     ]:
         image = (
             ee.ImageCollection(image_collection_name)
-            .filterDate("2023-01-01", "2023-12-31")
+            .filterDate(start_date, end_date)
             .mean()
         )
         if layer == "landsat":
@@ -107,24 +95,24 @@ def main():
                 },
             )
 
-        for index, grid in grid_generator.create_grids(XMIN, YMIN, XMAX, YMAX):
+        for index, grid in grids:
             task_queue.put(
                 {"grid": grid, "layer": layer, "index": index, "expression": image}
             )
 
-    for _ in range(WORKER_COUNT):
+    for _ in range(workers):
         task_queue.put(SENTINEL)
 
-    with ThreadPoolExecutor(max_workers=WORKER_COUNT) as executor:
+    with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = []
-        for _ in range(WORKER_COUNT):
-            futures.append(executor.submit(worker, task_queue))
+        for _ in range(workers):
+            futures.append(executor.submit(worker, output_dir, task_queue))
 
         for future in as_completed(futures):
             future.result()
 
 
-def worker(task_queue: queue.Queue):
+def worker(output_dir: str, task_queue: queue.Queue):
     while True:
         item = task_queue.get()
 
@@ -132,15 +120,19 @@ def worker(task_queue: queue.Queue):
             task_queue.task_done()
             break
 
-        t0 = time.perf_counter()
-        print(f"Starting {item['index']} - {item['layer']}...")
-        write_geotiff(**item)
-        print(f"Finished {item['index']} - {item['layer']}: {time.perf_counter() - t0}")
+        start_time = time.perf_counter()
+        logger.info(f"Starting extraction ({item['layer']}-{item['index']})...")
+        write_geotiff(output_dir=output_dir, **item)
+        elapsed_time = time.perf_counter() - start_time
+        logger.info(
+            f"Completed extraction ({item['layer']}-{item['index']}): {elapsed_time:.2f}s"
+        )
 
         task_queue.task_done()
 
 
 def write_geotiff(
+    output_dir: str,
     grid: dict,
     layer: str,
     index: int,
@@ -157,8 +149,8 @@ def write_geotiff(
         request["expression"] = expression
         raw_data = ee.data.computePixels(request)
 
-    os.makedirs(f"data/{layer}", exist_ok=True)
-    with open(f"data/{layer}/{index}.geotiff", "wb") as f:
+    os.makedirs(f"{output_dir}/{layer}", exist_ok=True)
+    with open(f"{output_dir}/{layer}/{index}.geotiff", "wb") as f:
         f.write(raw_data)
 
 
