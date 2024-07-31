@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 @click.option("--workers", default=35, help="Number of parallel workers to run")
 @click.option("--width", default=1000, help="Width of raster tile in pixels")
 @click.option("--height", default=1000, help="Height of raster tile in pixels")
-@click.option("--scale", default=250, help="Scale of raster tile in meters")
+@click.option("--scale", default=500, help="Scale of raster tile in meters")
 @click.option("--xmin", default=-124.68721, help="X coordinate minimum in degrees")
 @click.option("--ymin", default=25.079916, help="X coordinate minimum in degrees")
 @click.option("--xmax", default=-66.96466, help="X coordinate minimum in degrees")
@@ -122,7 +122,7 @@ def worker(output_dir: str, task_queue: queue.Queue):
 
         start_time = time.perf_counter()
         logger.info(f"Starting extraction ({item['layer']}-{item['index']})...")
-        write_geotiff(output_dir=output_dir, **item)
+        write_data(output_dir=output_dir, **item)
         elapsed_time = time.perf_counter() - start_time
         logger.info(
             f"Completed extraction ({item['layer']}-{item['index']}): {elapsed_time:.2f}s"
@@ -131,7 +131,7 @@ def worker(output_dir: str, task_queue: queue.Queue):
         task_queue.task_done()
 
 
-def write_geotiff(
+def write_data(
     output_dir: str,
     grid: dict,
     layer: str,
@@ -139,7 +139,7 @@ def write_geotiff(
     asset_id: int | None = None,
     expression: ee.Image | None = None,
 ):
-    request = {"fileFormat": "GEO_TIFF", "grid": grid}
+    request = {"fileFormat": "NPY", "grid": grid}
 
     if asset_id:
         request["assetId"] = asset_id
@@ -150,7 +150,7 @@ def write_geotiff(
         raw_data = ee.data.computePixels(request)
 
     os.makedirs(f"{output_dir}/{layer}", exist_ok=True)
-    with open(f"{output_dir}/{layer}/{index}.geotiff", "wb") as f:
+    with open(f"{output_dir}/{layer}/{index}.npy", "wb") as f:
         f.write(raw_data)
 
 

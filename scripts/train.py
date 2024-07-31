@@ -80,6 +80,7 @@ def main(
         model.parameters(), lr=learning_rate, weight_decay=weight_decay
     )
 
+    logger.info("Starting model training...")
     train_model(model, train_loader, criterion, optimizer, epochs, device)
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
