@@ -45,8 +45,8 @@ class PixelDataset(Dataset):
 
         self.features = torch.tensor(features_normalized, dtype=torch.float32)
 
-        arrays = []
         logger.info("Loading landsat files...")
+        arrays = []
         for filepath in sorted(
             [
                 f"{input_dir}/landsat/{filename}"

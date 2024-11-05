@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 
 
 @click.command()
-@click.option("--workers", default=35, help="Number of parallel workers to run")
+@click.option("--workers", default=10, help="Number of parallel workers to run")
 @click.option("--width", default=1000, help="Width of raster tile in pixels")
 @click.option("--height", default=1000, help="Height of raster tile in pixels")
-@click.option("--scale", default=500, help="Scale of raster tile in meters")
+@click.option("--scale", default=1000, help="Scale of raster tile in meters")
 @click.option("--xmin", default=-124.68721, help="X coordinate minimum in degrees")
 @click.option("--ymin", default=25.079916, help="X coordinate minimum in degrees")
 @click.option("--xmax", default=-66.96466, help="X coordinate minimum in degrees")
@@ -46,7 +46,7 @@ def main(
     logging.basicConfig(
         level=logging.INFO,
         format="[%(asctime)s] %(levelname)s - %(message)s",
-        datefmt="%H:%M:%S",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
     email = os.getenv("GEE_EMAIL", "default@ee-danmcfan.iam.gserviceaccount.com")
